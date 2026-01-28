@@ -8,7 +8,7 @@ CORS(app) # Cho phép App Mobile gọi vào
 
 # --- CẤU HÌNH KẾT NỐI DB ---
 # Thay 'root', 'password' bằng user/pass MySQL của bạn
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:123456@localhost/pharmacy_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:123456@db/pharmacy_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -20,7 +20,7 @@ class Product(db.Model):
     name = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Numeric(10, 2), nullable=False)
     image_url = db.Column(db.Text)
-    category_id = db.Column(db.Integer)
+    # category_id = db.Column(db.Integer)
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -85,5 +85,5 @@ def create_order():
 
 # --- CHẠY SERVER ---
 if __name__ == '__main__':
-    # Debug=True để khi sửa code nó tự reload, không cần tắt bật lại
+    # Port 5000 là port nội bộ trong container
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # --- DỊCH VỤ DATABASE (Sửa đoạn này) ---
+  db:
+    image: mysql:8.0
+    container_name: mysql_master_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: pharmacy_db
+    ports:                # <--- Dòng này phải thẳng hàng với image, environment
+      - "3306:3306"       # <--- Mở cổng 3306 ra ngoài
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - iot-network
+
+  # --- DỊCH VỤ WEB BACKEND ---
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pharmacy-server
+    container_name: flask_pharmacy_container
+    restart: always
+    ports:
+      - "5000:5000"
+    command: python app_paramacia.py
+    depends_on:
+      db:
+        condition: service_healthy
+        # TUYỆT ĐỐI KHÔNG ĐƯỢC CÓ 'ports' Ở ĐÂY
+    volumes:
+      - .:/app
+    networks:
+      - iot-network
+
+volumes:
+  mysql_data:
+
+networks:
+  iot-network:
+    driver: bridge
