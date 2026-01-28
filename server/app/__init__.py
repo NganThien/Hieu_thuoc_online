@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_migrate import Migrate
 import os
 
 # Khởi tạo DB nhưng chưa kết nối
 db = SQLAlchemy()
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
@@ -23,13 +25,14 @@ def create_app():
 
     # Kết nối DB với App
     db.init_app(app)
+    migrate.init_app(app, db)
 
     # Đăng ký các Route (API)
     from .routes import main
     app.register_blueprint(main)
 
     # Tự động tạo bảng nếu chưa có (Lệnh này chạy mỗi khi bật server)
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #    db.create_all()
 
     return app
