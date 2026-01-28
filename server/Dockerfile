@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # 7. Lệnh chạy mặc định (sẽ bị docker-compose ghi đè, nhưng cứ để đây cho chuẩn)
-CMD ["python", "app_paramacia.py"]
+CMD ["python", "run.py"]
