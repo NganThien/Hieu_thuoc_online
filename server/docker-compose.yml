@@ -31,7 +31,7 @@ services:
     restart: always
     ports:
       - "5000:5000"
-    command: python app_paramacia.py
+    command: python run.py
     depends_on:
       db:
         condition: service_healthy
