@@ -22,3 +22,14 @@ def get_products():
         "products": [p.to_dict() for p in products],
         "count": len(products)
     })
+
+@main.route('/api/products/<int:id>', methods=['GET'])
+def get_product_detail(id):
+    # Tìm thuốc theo ID
+    product = Product.query.get(id)
+    
+    if product:
+        return jsonify(product.to_dict())
+    else:
+        return jsonify({'message': 'Không tìm thấy thuốc'}), 404
+    
