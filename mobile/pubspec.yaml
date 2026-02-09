@@ -9,14 +9,23 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  # Icon cho iOS
   cupertino_icons: ^1.0.8
-  http: ^1.6.0
-  intl: ^0.20.2
+  
+  # Gọi API (Kết nối Server)
+  http: ^1.2.0
+  
+  # Định dạng tiền tệ (VND)
+  intl: ^0.19.0
+  
+  # Lưu thông tin đăng nhập vào bộ nhớ máy (QUAN TRỌNG)
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true

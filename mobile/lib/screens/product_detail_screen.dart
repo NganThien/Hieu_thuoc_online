@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/product.dart';
+import '../models/cart.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget {
   final Product product;
 
   const ProductDetailScreen({super.key, required this.product});
 
+  @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  int _quantity = 1; // Mặc định mua 1 cái
+
+  // Hàm định dạng tiền (VND)
   String formatCurrency(double price) {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(price);
   }
@@ -15,38 +24,35 @@ class ProductDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // AppBar trong suốt để ảnh tràn lên trên
+      // 1. APP BAR TRONG SUỐT (Để ảnh tràn lên trên cùng)
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Column(
         children: [
-          // 1. ẢNH SẢN PHẨM (Chiếm 40% màn hình)
+          // 2. ẢNH SẢN PHẨM LỚN
           Expanded(
-            flex: 4,
+            flex: 4, // Chiếm 40% màn hình
             child: Container(
               width: double.infinity,
-              color: const Color(0xFFF7F9FC),
-              padding: const EdgeInsets.all(40),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF5F5F5), // Nền xám nhạt
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(30),
+                ),
+              ),
               child: Hero(
-                // Hiệu ứng phóng to ảnh mượt mà
-                tag: 'product_img_${product.id}',
+                tag:
+                    'product_img_${widget.product.id}', // Hiệu ứng bay từ màn hình trước
                 child: Image.network(
-                  product.imageUrl.isNotEmpty
-                      ? product.imageUrl
+                  widget.product.imageUrl.isNotEmpty
+                      ? widget.product.imageUrl
                       : "https://cdn-icons-png.flaticon.com/512/883/883407.png",
                   fit: BoxFit.contain,
                 ),
@@ -54,29 +60,17 @@ class ProductDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // 2. THÔNG TIN CHI TIẾT (Chiếm 60% màn hình)
+          // 3. THÔNG TIN CHI TIẾT
           Expanded(
-            flex: 6,
+            flex: 6, // Chiếm 60% màn hình
             child: Container(
-              width: double.infinity,
               padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 20,
-                    offset: Offset(0, -5),
-                  ),
-                ],
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Tên thuốc
                   Text(
-                    product.name,
+                    widget.product.name,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -84,9 +78,10 @@ class ProductDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
+
                   // Giá tiền
                   Text(
-                    formatCurrency(product.price),
+                    formatCurrency(widget.product.price),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
@@ -94,25 +89,95 @@ class ProductDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Mô tả
+
+                  // Mô tả (Tiêu đề)
                   const Text(
                     "Mô tả sản phẩm",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+
+                  // Nội dung mô tả (Cuộn được nếu dài)
                   Expanded(
                     child: SingleChildScrollView(
                       child: Text(
-                        product.description.isNotEmpty
-                            ? product.description
+                        widget.product.description.isNotEmpty
+                            ? widget.product.description
                             : "Chưa có mô tả chi tiết cho sản phẩm này.",
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 15,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
                           height: 1.5,
                         ),
                       ),
                     ),
+                  ),
+
+                  // 4. THANH CHỌN SỐ LƯỢNG + NÚT MUA
+                  const Divider(),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      // Nút trừ
+                      _buildQuantityButton(Icons.remove, () {
+                        if (_quantity > 1) setState(() => _quantity--);
+                      }),
+                      const SizedBox(width: 15),
+                      // Số lượng
+                      Text(
+                        '$_quantity',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      // Nút cộng
+                      _buildQuantityButton(Icons.add, () {
+                        setState(() => _quantity++);
+                      }),
+
+                      const Spacer(), // Đẩy nút Mua sang phải
+                      // Nút THÊM VÀO GIỎ
+                      ElevatedButton(
+                        onPressed: () {
+                          // 1. Gọi hàm thêm vào giỏ (Code mình vừa viết ở bước 1)
+                          Cart.addToCart(widget.product, _quantity);
+
+                          // 2. Thông báo cho người dùng biết
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Đã thêm $_quantity ${widget.product.name} vào giỏ!',
+                              ),
+                              backgroundColor: const Color(0xFF009688),
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+
+                          // (Tùy chọn) Có thể cho quay về màn hình trước luôn nếu thích
+                          // Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF009688),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child: const Text(
+                          "Thêm vào giỏ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -120,42 +185,20 @@ class ProductDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      // 3. NÚT MUA HÀNG (Dính ở đáy)
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Colors.black12)),
+    );
+  }
+
+  // Widget nút cộng trừ nhỏ nhỏ
+  Widget _buildQuantityButton(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF009688),
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Đã thêm ${product.name} vào giỏ hàng!')),
-            );
-          },
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.shopping_cart_outlined, color: Colors.white),
-              SizedBox(width: 10),
-              Text(
-                "THÊM VÀO GIỎ HÀNG",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
+        child: Icon(icon, size: 20),
       ),
     );
   }

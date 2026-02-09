@@ -20,7 +20,7 @@ def create_app():
     db_host = os.environ.get('MYSQL_HOST', 'db') # Tên service trong Docker
     db_name = os.environ.get('MYSQL_DATABASE', 'pharmacy_db')
     
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{db_user}:{db_pass}@{db_host}/{db_name}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Kết nối DB với App

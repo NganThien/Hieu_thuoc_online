@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_tab.dart'; // Chúng ta sẽ tạo file này ở Bước 3
+import 'profile_screen.dart';
+import 'cart_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,8 +18,8 @@ class _MainScreenState extends State<MainScreen> {
     const HomeTab(), // Trang chủ (Sẽ làm ở bước 3)
     const Center(child: Text('Màn hình Điểm thưởng')), // Placeholder
     const Center(child: Text('Màn hình Tư vấn')), // Placeholder
-    const Center(child: Text('Màn hình Giỏ hàng')), // Placeholder
-    const Center(child: Text('Màn hình Tài khoản')), // Placeholder
+    const CartScreen(),
+    const ProfileScreen(),
   ];
 
   @override

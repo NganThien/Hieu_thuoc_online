@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
 import 'product_detail_screen.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -14,10 +16,28 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   late Future<List<Product>> _futureProducts;
 
+  // 1. Biến để lưu tên người dùng
+  String _fullName = "Khách hàng";
+
   @override
   void initState() {
     super.initState();
     _futureProducts = ApiService.fetchProducts();
+    _loadUserInfo(); // 2. Gọi hàm lấy tên ngay khi mở màn hình
+  }
+
+  // 3. Hàm đọc thông tin từ bộ nhớ máy
+  Future<void> _loadUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userString = prefs.getString('user_data');
+
+    if (userString != null) {
+      final userData = jsonDecode(userString);
+      setState(() {
+        // Cập nhật tên (Nếu null thì lấy mặc định)
+        _fullName = userData['full_name'] ?? "Khách hàng";
+      });
+    }
   }
 
   String formatCurrency(double price) {
@@ -26,22 +46,19 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
-    // Màu chủ đạo: Teal pha chút xanh dương (Gradient)
     final List<Color> brandGradient = [
-      const Color(0xFF009688), // Teal đậm
-      const Color(0xFF4DB6AC), // Teal nhạt
+      const Color(0xFF009688),
+      const Color(0xFF4DB6AC),
     ];
 
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFF7F9FC,
-      ), // Nền xám xanh cực nhạt (sang hơn trắng)
+      backgroundColor: const Color(0xFFF7F9FC),
       body: SingleChildScrollView(
         child: Column(
           children: [
             // --- 1. HEADER CONG + TÌM KIẾM THẢ NỔI ---
             Stack(
-              clipBehavior: Clip.none, // Cho phép tìm kiếm thò ra ngoài
+              clipBehavior: Clip.none,
               children: [
                 // Nền Header Cong
                 Container(
@@ -65,19 +82,20 @@ class _HomeTabState extends State<HomeTab> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Xin chào,",
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
                             ),
                           ),
+                          // 4. HIỂN THỊ TÊN NGƯỜI DÙNG TẠI ĐÂY
                           Text(
-                            "Nhà thuốc 4.0",
-                            style: TextStyle(
+                            _fullName,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 22,
@@ -139,14 +157,12 @@ class _HomeTabState extends State<HomeTab> {
               ],
             ),
 
-            const SizedBox(height: 40), // Cách ra cho thanh tìm kiếm thở
-            // --- 2. BANNER SLIDER (Dùng PageView) ---
+            const SizedBox(height: 40),
+            // --- 2. BANNER SLIDER ---
             SizedBox(
               height: 140,
               child: PageView(
-                controller: PageController(
-                  viewportFraction: 0.9,
-                ), // Để lộ 1 chút 2 bên
+                controller: PageController(viewportFraction: 0.9),
                 children: [
                   _buildBannerItem(Colors.blue[100]!, "Tư vấn F0\nMiễn phí"),
                   _buildBannerItem(Colors.orange[100]!, "Giao thuốc\n24/7"),
@@ -217,8 +233,9 @@ class _HomeTabState extends State<HomeTab> {
             FutureBuilder<List<Product>>(
               future: _futureProducts,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting)
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
+                }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.all(20),
@@ -235,7 +252,7 @@ class _HomeTabState extends State<HomeTab> {
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.72, // Tinh chỉnh tỷ lệ thẻ
+                    childAspectRatio: 0.72,
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
                   ),
@@ -252,7 +269,7 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  // --- CÁC WIDGET CON (Được thiết kế lại) ---
+  // --- CÁC WIDGET CON ---
 
   Widget _buildBannerItem(Color color, String text) {
     return Container(
@@ -298,7 +315,7 @@ class _HomeTabState extends State<HomeTab> {
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(18), // Bo góc mềm hơn hình tròn
+            borderRadius: BorderRadius.circular(18),
           ),
           child: Icon(icon, color: Colors.black87, size: 26),
         ),
@@ -311,10 +328,8 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  // Widget con: Thẻ sản phẩm (Đã nâng cấp chức năng bấm)
   Widget _buildModernProductCard(Product product) {
     return GestureDetector(
-      // 1. XỬ LÝ SỰ KIỆN BẤM
       onTap: () {
         Navigator.push(
           context,
@@ -323,7 +338,6 @@ class _HomeTabState extends State<HomeTab> {
           ),
         );
       },
-      // 2. PHẦN GIAO DIỆN THẺ
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -339,7 +353,6 @@ class _HomeTabState extends State<HomeTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 2.1 Ảnh thuốc (Có hiệu ứng Hero)
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -349,8 +362,7 @@ class _HomeTabState extends State<HomeTab> {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Hero(
-                  tag:
-                      'product_img_${product.id}', // Tag này phải trùng với tag bên màn hình Detail
+                  tag: 'product_img_${product.id}',
                   child: Image.network(
                     product.imageUrl.isNotEmpty
                         ? product.imageUrl
@@ -360,7 +372,6 @@ class _HomeTabState extends State<HomeTab> {
                 ),
               ),
             ),
-            // 2.2 Thông tin Tên và Giá
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(

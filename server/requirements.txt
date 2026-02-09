@@ -4,3 +4,5 @@ flask-cors
 mysql-connector-python
 cryptography
 Flask-Migrate
+flask-cors
+pymysql

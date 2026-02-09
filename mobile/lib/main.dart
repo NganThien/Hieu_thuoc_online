@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/main_screen.dart'; // Sử dụng MainScreen làm màn hình điều hướng chính
+import 'screens/main_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF5F5FA),
       ),
       // Chỉ giữ lại MỘT màn hình home chính
-      home: const MainScreen(),
+      home: const LoginScreen(),
     );
   }
 }
