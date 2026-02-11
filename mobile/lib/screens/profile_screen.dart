@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart'; // Để khi đăng xuất thì quay về đây
+import 'order_history_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -108,6 +109,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Icons.shopping_bag,
                       "Đơn hàng",
                       "Xem lịch sử mua hàng",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OrderHistoryScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const Divider(),
                     _buildInfoRow(Icons.help, "Hỗ trợ", "Liên hệ dược sĩ"),
@@ -139,28 +148,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Widget phụ để vẽ mấy dòng thông tin cho đỡ lặp code
-  Widget _buildInfoRow(IconData icon, String title, String value) {
+  Widget _buildInfoRow(
+    IconData icon,
+    String title,
+    String value, {
+    VoidCallback? onTap,
+  }) {
+    final row = Row(
+      children: [
+        Icon(icon, color: Colors.grey[600], size: 20),
+        const SizedBox(width: 15),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(value, style: const TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
+        const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+      ],
+    );
+
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: row,
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.grey[600], size: 20),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                Text(value, style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-          const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
-        ],
-      ),
+      child: row,
     );
   }
 }

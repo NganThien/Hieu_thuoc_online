@@ -116,3 +116,39 @@ def create_order():
     except Exception as e:
         db.session.rollback() # Nếu có lỗi thì hủy hết, không lưu dở dang
         return jsonify({'message': f'Lỗi server: {str(e)}'}), 500
+
+
+# --- 6. API LỊCH SỬ ĐƠN HÀNG ---
+@main.route('/api/orders/history', methods=['POST'])
+def get_order_history():
+    data = request.get_json()
+
+    # Kiểm tra dữ liệu đầu vào
+    if not data or not data.get('user_id'):
+        return jsonify({'message': 'Thiếu user_id!'}), 400
+
+    try:
+        user_id = data['user_id']
+
+        # Lấy danh sách đơn hàng của user, mới nhất lên đầu
+        orders = (
+            Order.query
+            .filter_by(user_id=user_id)
+            .order_by(Order.created_at.desc())
+            .all()
+        )
+
+        # Định dạng dữ liệu trả về
+        history = []
+        for order in orders:
+            history.append({
+                'id': order.id,
+                'total_amount': float(order.total_amount) if order.total_amount is not None else 0,
+                'status': order.status,
+                'created_at': order.created_at.isoformat() if getattr(order, 'created_at', None) else None,
+            })
+
+        return jsonify({'orders': history}), 200
+
+    except Exception as e:
+        return jsonify({'message': f'Lỗi server: {str(e)}'}), 500
