@@ -1,13 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
+import '../configs.dart';
 
 class ApiService {
-  static const String baseUrl = "http://localhost:5000/api";
+  static String get baseUrl => Configs.baseUrl;
 
-  static Future<List<Product>> fetchProducts() async {
+  /// [search] Nếu có, gọi API với query `q` để tìm kiếm theo tên sản phẩm.
+  static Future<List<Product>> fetchProducts({String? search}) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/products'));
+      final uri = Uri.parse('$baseUrl/products').replace(
+        queryParameters: (search != null && search.trim().isNotEmpty)
+            ? {'q': search.trim()}
+            : null,
+      );
+      final response = await http.get(uri);
 
       if (response.statusCode == 200) {
         // 1. Giải mã cục JSON to đùng

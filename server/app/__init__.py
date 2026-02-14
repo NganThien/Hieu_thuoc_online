@@ -17,7 +17,8 @@ def create_app():
     # Cấu hình Database
     db_user = os.environ.get('MYSQL_USER', 'root')
     db_pass = os.environ.get('MYSQL_ROOT_PASSWORD', '123456')
-    db_host = os.environ.get('MYSQL_HOST', 'db') # Tên service trong Docker
+    # Mặc định localhost để chạy seed/script trên máy; trong Docker set MYSQL_HOST=db
+    db_host = os.environ.get('MYSQL_HOST', 'localhost')
     db_name = os.environ.get('MYSQL_DATABASE', 'pharmacy_db')
     
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}'
@@ -30,6 +31,10 @@ def create_app():
     # Đăng ký các Route (API)
     from .routes import main
     app.register_blueprint(main)
+
+    # Flask-Admin: Trang quản trị
+    from .admin import init_admin
+    init_admin(app)
 
     # Tự động tạo bảng nếu chưa có (Lệnh này chạy mỗi khi bật server)
     # with app.app_context():

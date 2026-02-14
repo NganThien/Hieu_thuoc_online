@@ -16,7 +16,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _phoneController = TextEditingController();
   final _passController = TextEditingController();
+  final _passFocusNode = FocusNode();
   bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _passFocusNode.dispose();
+    super.dispose();
+  }
 
   // Hàm xử lý Đăng nhập
   Future<void> _handleLogin() async {
@@ -96,10 +103,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 40),
 
-              // Ô nhập số điện thoại
+              // Ô nhập số điện thoại — nhấn Tiếp chuyển xuống ô mật khẩu
               TextField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) => FocusScope.of(context).requestFocus(_passFocusNode),
                 decoration: InputDecoration(
                   labelText: "Số điện thoại",
                   prefixIcon: const Icon(Icons.phone_android),
@@ -110,10 +119,15 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Ô nhập mật khẩu
+              // Ô nhập mật khẩu — nhấn Enter/Done trên bàn phím = đăng nhập
               TextField(
+                focusNode: _passFocusNode,
                 controller: _passController,
                 obscureText: true,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) {
+                  if (!_isLoading) _handleLogin();
+                },
                 decoration: InputDecoration(
                   labelText: "Mật khẩu",
                   prefixIcon: const Icon(Icons.lock),

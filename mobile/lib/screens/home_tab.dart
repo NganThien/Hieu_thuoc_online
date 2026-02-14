@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
 import 'product_detail_screen.dart';
+import 'search_screen.dart';
+import 'voice_record_screen.dart';
+import 'camera_screen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -117,40 +120,68 @@ class _HomeTabState extends State<HomeTab> {
                     ],
                   ),
                 ),
-                // Thanh tìm kiếm (Thả nổi ở giữa)
+                // Thanh tìm kiếm (bấm vào chuyển sang trang Tìm kiếm) + Ghi âm + Máy ảnh
                 Positioned(
                   bottom: -25,
                   left: 20,
                   right: 20,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.search, color: Colors.grey),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Bạn đang tìm thuốc gì...",
-                              border: InputBorder.none,
-                              hintStyle: TextStyle(color: Colors.black38),
-                            ),
+                  child: Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    elevation: 4,
+                    shadowColor: Colors.black.withOpacity(0.1),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SearchScreen(),
                           ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(15),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        height: 50,
+                        child: Row(
+                          children: [
+                            const Icon(Icons.search, color: Colors.grey),
+                            const SizedBox(width: 10),
+                            const Expanded(
+                              child: Text(
+                                "Bạn đang tìm thuốc gì...",
+                                style: TextStyle(color: Colors.black38),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.mic, color: Color(0xFF009688)),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const VoiceRecordScreen(),
+                                  ),
+                                );
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.camera_alt, color: Color(0xFF009688)),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const CameraScreen(),
+                                  ),
+                                );
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                            ),
+                          ],
                         ),
-                        Icon(Icons.qr_code_scanner, color: Color(0xFF009688)),
-                      ],
+                      ),
                     ),
                   ),
                 ),

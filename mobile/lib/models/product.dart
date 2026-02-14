@@ -21,7 +21,7 @@ class Product {
       // Trong JSON không có mô tả thì để trống
       description: json['description'] ?? 'Không có mô tả',
       // Sửa 'image_url' thành 'image' cho khớp với server của bạn
-      imageUrl: json['image'] ?? '',
+      imageUrl: json['image_url'] ?? json['image'] ?? '',
     );
   }
 }

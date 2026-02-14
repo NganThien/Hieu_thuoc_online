@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../configs.dart';
 import 'login_screen.dart'; // Để khi đăng xuất thì quay về đây
 import 'order_history_screen.dart';
 
@@ -16,6 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String fullName = "Đang tải...";
   String phone = "";
   String address = "";
+  bool isAdmin = false;
 
   @override
   void initState() {
@@ -40,15 +43,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
         fullName = userData['full_name'] ?? "Chưa cập nhật";
         phone = userData['phone'] ?? "";
         address = userData['address'] ?? "Chưa có địa chỉ";
+        isAdmin = userData['is_admin'] == true;
       });
     }
+  }
+
+  /// Mở trang Quản trị trong trình duyệt
+  Future<void> _openAdminPage() async {
+    final uri = Uri.parse(Configs.adminUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không thể mở trang Quản trị')),
+      );
+    }
+  }
+
+  void _openOrderHistory({String? initialStatus}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrderHistoryScreen(initialStatus: initialStatus),
+      ),
+    );
   }
 
   // --- HÀM 2: ĐĂNG XUẤT (XÓA VÍ) ---
   Future<void> _handleLogout() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // 1. Xóa sạch dữ liệu trong ví
+    // 1. Xóa sạch dữ liệu trong ví (gồm cả is_admin trong user_data)
     await prefs.remove('user_data');
 
     if (!mounted) return;
@@ -74,6 +100,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+            // --- CARD TRUY CẬP QUẢN TRỊ (chỉ hiển thị khi is_admin) ---
+            if (isAdmin) ...[
+              Card(
+                elevation: 3,
+                color: Colors.orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: InkWell(
+                  onTap: _openAdminPage,
+                  borderRadius: BorderRadius.circular(15),
+                  child: const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.admin_panel_settings,
+                          size: 40,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            "Truy cập trang Quản Trị",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.open_in_browser, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             // --- PHẦN 1: AVATAR VÀ TÊN ---
             const Center(
               child: CircleAvatar(
@@ -91,7 +156,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               phone, // Biến sđt lấy từ ví
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 24),
+
+            // --- PHẦN THỐNG KÊ ĐƠN HÀNG (Đơn của tôi) ---
+            _buildOrderStatusSection(),
+
+            const SizedBox(height: 24),
 
             // --- PHẦN 2: THÔNG TIN CHI TIẾT (Card) ---
             Card(
@@ -104,20 +174,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   children: [
                     _buildInfoRow(Icons.location_on, "Địa chỉ", address),
-                    const Divider(),
-                    _buildInfoRow(
-                      Icons.shopping_bag,
-                      "Đơn hàng",
-                      "Xem lịch sử mua hàng",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const OrderHistoryScreen(),
-                          ),
-                        );
-                      },
-                    ),
                     const Divider(),
                     _buildInfoRow(Icons.help, "Hỗ trợ", "Liên hệ dược sĩ"),
                   ],
@@ -142,6 +198,113 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Widget thống kê trạng thái đơn hàng: tiêu đề "Đơn của tôi", nút "Xem tất cả", hàng 4 trạng thái.
+  Widget _buildOrderStatusSection() {
+    const blueIcon = Color(0xFF2196F3);
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 12, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Hàng tiêu đề + "Xem tất cả"
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Đơn của tôi",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => _openOrderHistory(),
+                  child: const Text(
+                    "Xem tất cả",
+                    style: TextStyle(
+                      color: Color(0xFF009688),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Hàng 4 trạng thái
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildStatusItem(
+                  icon: Icons.assignment_outlined,
+                  label: "Đang xử lý",
+                  color: blueIcon,
+                  onTap: () => _openOrderHistory(initialStatus: 'pending'),
+                ),
+                _buildStatusItem(
+                  icon: Icons.local_shipping_outlined,
+                  label: "Đang giao",
+                  color: blueIcon,
+                  onTap: () => _openOrderHistory(initialStatus: 'shipping'),
+                ),
+                _buildStatusItem(
+                  icon: Icons.check_circle_outlined,
+                  label: "Đã giao",
+                  color: blueIcon,
+                  onTap: () => _openOrderHistory(initialStatus: 'completed'),
+                ),
+                _buildStatusItem(
+                  icon: Icons.restore_page_outlined,
+                  label: "Đổi/Trả",
+                  color: blueIcon,
+                  onTap: () => _openOrderHistory(initialStatus: 'cancelled'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusItem({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 32, color: color),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

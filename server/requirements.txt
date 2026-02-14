@@ -6,3 +6,5 @@ cryptography
 Flask-Migrate
 flask-cors
 pymysql
+flask-admin
+Pillow

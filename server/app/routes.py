@@ -61,14 +61,20 @@ def login():
             'full_name': user.full_name,
             'phone': user.phone,
             'role': user.role,
+            'is_admin': (user.role == 'admin'),
             'address': user.address
         }
     }), 200
 
-# --- 3. API LẤY DANH SÁCH THUỐC ---
+# --- 3. API LẤY DANH SÁCH THUỐC (hỗ trợ tìm kiếm theo tên) ---
 @main.route('/api/products', methods=['GET'])
 def get_products():
-    products = Product.query.all()
+    q = request.args.get('q') or request.args.get('search', '').strip()
+    if q:
+        # Lọc theo tên sản phẩm: LIKE %q% (không phân biệt hoa thường)
+        products = Product.query.filter(Product.name.ilike(f'%{q}%')).all()
+    else:
+        products = Product.query.all()
     output = [p.to_dict() for p in products]
     return jsonify({'products': output})
 
@@ -151,4 +157,49 @@ def get_order_history():
         return jsonify({'orders': history}), 200
 
     except Exception as e:
+        return jsonify({'message': f'Lỗi server: {str(e)}'}), 500
+
+
+# --- 7. API CHI TIẾT MỘT ĐƠN HÀNG ---
+@main.route('/api/orders/<int:order_id>', methods=['GET'])
+def get_order_detail(order_id):
+    order = Order.query.get_or_404(order_id)
+
+    # Lấy danh sách sản phẩm trong đơn (OrderDetail + Product)
+    items = []
+    for detail in order.details:
+        product = Product.query.get(detail.product_id)
+        if product:
+            items.append({
+                'product_id': product.id,
+                'name': product.name,
+                'image_url': product.image_url,
+                'price_at_purchase': float(detail.price_at_purchase) if detail.price_at_purchase is not None else 0,
+                'quantity': detail.quantity,
+            })
+
+    return jsonify({
+        'id': order.id,
+        'created_at': order.created_at.isoformat() if getattr(order, 'created_at', None) else None,
+        'status': order.status,
+        'total_amount': float(order.total_amount) if order.total_amount is not None else 0,
+        'shipping_address': order.shipping_address or '',
+        'items': items,
+    }), 200
+
+
+# --- 8. API HỦY ĐƠN HÀNG ---
+@main.route('/api/orders/<int:order_id>/cancel', methods=['PUT'])
+def cancel_order(order_id):
+    order = Order.query.get_or_404(order_id)
+
+    if order.status != 'pending':
+        return jsonify({'message': 'Chỉ được hủy đơn hàng đang ở trạng thái Chờ xử lý!'}), 400
+
+    try:
+        order.status = 'cancelled'
+        db.session.commit()
+        return jsonify({'message': 'Đã hủy đơn hàng thành công!'}), 200
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'message': f'Lỗi server: {str(e)}'}), 500

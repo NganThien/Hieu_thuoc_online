@@ -14,6 +14,38 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  // Chọn mua hay không: true = mua, false = không mua
+  List<bool> _selectedItems = [];
+
+  void _syncSelectedList() {
+    while (_selectedItems.length < Cart.items.length) {
+      _selectedItems.add(true);
+    }
+    if (_selectedItems.length > Cart.items.length) {
+      _selectedItems = _selectedItems.sublist(0, Cart.items.length);
+    }
+  }
+
+  double _getSelectedTotal() {
+    double total = 0;
+    for (int i = 0; i < Cart.items.length; i++) {
+      if (i < _selectedItems.length && _selectedItems[i]) {
+        total += Cart.items[i].product.price * Cart.items[i].quantity;
+      }
+    }
+    return total;
+  }
+
+  List<CartItem> _getSelectedItems() {
+    final list = <CartItem>[];
+    for (int i = 0; i < Cart.items.length; i++) {
+      if (i < _selectedItems.length && _selectedItems[i]) {
+        list.add(Cart.items[i]);
+      }
+    }
+    return list;
+  }
+
   // Hàm định dạng tiền
   String formatCurrency(double price) {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(price);
@@ -21,18 +53,24 @@ class _CartScreenState extends State<CartScreen> {
 
   // Hàm cập nhật lại giao diện khi xóa/sửa
   void _updateCart() {
-    setState(
-      () {},
-    ); // Lệnh này bắt Flutter vẽ lại màn hình để cập nhật tổng tiền
+    setState(() {});
   }
 
-  // --- HÀM XỬ LÝ ĐẶT HÀNG (MỚI THÊM) ---
+  // --- HÀM XỬ LÝ ĐẶT HÀNG (chỉ đặt các món đã tích) ---
   Future<void> _placeOrder() async {
-    // 1. Kiểm tra giỏ hàng
     if (Cart.items.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Giỏ hàng đang trống!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Giỏ hàng đang trống!")),
+      );
+      return;
+    }
+
+    _syncSelectedList();
+    final selected = _getSelectedItems();
+    if (selected.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Vui lòng tích chọn ít nhất một món để đặt hàng!")),
+      );
       return;
     }
 
@@ -52,12 +90,12 @@ class _CartScreenState extends State<CartScreen> {
     final address = user['address']; // Lấy địa chỉ
 
     try {
-      // 3. Chuẩn bị dữ liệu để gửi đi (Đóng gói)
+      // 3. Chuẩn bị dữ liệu chỉ gửi các món đã tích chọn
       final orderData = {
         'user_id': userId,
-        'total_amount': Cart.getTotalPrice(),
+        'total_amount': _getSelectedTotal(),
         'address': address,
-        'items': Cart.items
+        'items': selected
             .map(
               (item) => {
                 'product_id': item.product.id,
@@ -77,9 +115,18 @@ class _CartScreenState extends State<CartScreen> {
 
       // 5. Xử lý kết quả
       if (response.statusCode == 201) {
-        // Thành công -> Xóa giỏ hàng -> Báo tin vui
+        // Thành công -> Chỉ xóa các món đã đặt (đã tích)
         setState(() {
-          Cart.items.clear();
+          final indices = <int>[];
+          for (int i = 0; i < Cart.items.length; i++) {
+            if (i < _selectedItems.length && _selectedItems[i]) {
+              indices.add(i);
+            }
+          }
+          for (int i = indices.length - 1; i >= 0; i--) {
+            Cart.removeFromCart(indices[i]);
+            _selectedItems.removeAt(indices[i]);
+          }
         });
 
         if (!mounted) return;
@@ -114,6 +161,9 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Đồng bộ danh sách chọn trước khi tính tổng (tránh tổng = 0 khi mới vào màn hình)
+    _syncSelectedList();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5FA),
       appBar: AppBar(
@@ -132,17 +182,34 @@ class _CartScreenState extends State<CartScreen> {
                     itemCount: Cart.items.length,
                     padding: const EdgeInsets.all(15),
                     itemBuilder: (context, index) {
+                      _syncSelectedList();
                       final item = Cart.items[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            children: [
-                              // Ảnh nhỏ
+                      final isSelected = index < _selectedItems.length && _selectedItems[index];
+                      return Opacity(
+                        opacity: isSelected ? 1.0 : 0.6,
+                        child: Card(
+                          margin: const EdgeInsets.only(bottom: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              children: [
+                                // Checkbox: tích = mua, bỏ tích = không mua
+                                Checkbox(
+                                  value: isSelected,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _syncSelectedList();
+                                      if (index < _selectedItems.length) {
+                                        _selectedItems[index] = value ?? false;
+                                      }
+                                    });
+                                  },
+                                  activeColor: const Color(0xFF009688),
+                                ),
+                                // Ảnh nhỏ
                               Container(
                                 width: 80,
                                 height: 80,
@@ -197,12 +264,16 @@ class _CartScreenState extends State<CartScreen> {
                                   color: Colors.red,
                                 ),
                                 onPressed: () {
-                                  Cart.removeFromCart(index); // Xóa khỏi bộ nhớ
-                                  _updateCart(); // Vẽ lại màn hình
+                                  Cart.removeFromCart(index);
+                                  if (index < _selectedItems.length) {
+                                    _selectedItems.removeAt(index);
+                                  }
+                                  _updateCart();
                                 },
                               ),
                             ],
                           ),
+                        ),
                         ),
                       );
                     },
@@ -235,7 +306,7 @@ class _CartScreenState extends State<CartScreen> {
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
-                            formatCurrency(Cart.getTotalPrice()),
+                            formatCurrency(_getSelectedTotal()),
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

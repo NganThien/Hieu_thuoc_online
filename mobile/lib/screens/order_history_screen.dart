@@ -2,12 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../configs.dart';
+import 'order_detail_screen.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
-  const OrderHistoryScreen({super.key});
+  /// Tab mở mặc định: pending, shipping, completed, cancelled.
+  final String? initialStatus;
+
+  const OrderHistoryScreen({
+    super.key,
+    this.initialStatus,
+  });
 
   @override
   State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
@@ -64,8 +72,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final list = data['orders'] as List<dynamic>? ?? [];
         setState(() {
-          _orders = (data['orders'] as List<dynamic>? ?? []);
+          _orders = list;
           _isLoading = false;
         });
       } else {
@@ -98,6 +107,40 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     }
   }
 
+  String _formatDate(String? isoDate) {
+    if (isoDate == null || isoDate.isEmpty) return '—';
+    try {
+      final dt = DateTime.parse(isoDate);
+      return DateFormat('HH:mm dd/MM/yyyy').format(dt);
+    } catch (_) {
+      return isoDate;
+    }
+  }
+
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'completed':
+        return 'Hoàn thành';
+      case 'pending':
+        return 'Chờ xử lý';
+      case 'shipping':
+        return 'Đang giao';
+      case 'cancelled':
+        return 'Đã hủy';
+      default:
+        return status;
+    }
+  }
+
+  static const List<String> _tabStatuses = ['pending', 'shipping', 'completed', 'cancelled'];
+
+  int _initialTabIndex() {
+    final s = widget.initialStatus;
+    if (s == null) return 0;
+    final i = _tabStatuses.indexOf(s);
+    return i >= 0 ? i : 0;
+  }
+
   String _formatCurrency(num? amount) {
     if (amount == null) return '0 VND';
     // Định dạng đơn giản: thêm dấu chấm phân cách hàng nghìn
@@ -115,75 +158,92 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lịch sử đơn hàng'),
-        backgroundColor: const Color(0xFF009688),
-        foregroundColor: Colors.white,
-      ),
-      body: RefreshIndicator(
-        onRefresh: _fetchOrderHistory,
-        child: _buildBody(),
+    return DefaultTabController(
+      length: 4,
+      initialIndex: _initialTabIndex(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Lịch sử đơn hàng'),
+          backgroundColor: const Color(0xFF009688),
+          foregroundColor: Colors.white,
+          bottom: const TabBar(
+            isScrollable: true,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            indicatorColor: Colors.white,
+            tabs: [
+              Tab(text: 'Đang xử lý'),
+              Tab(text: 'Đang giao'),
+              Tab(text: 'Đã giao'),
+              Tab(text: 'Đổi/Trả'),
+            ],
+          ),
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null
+                ? _buildErrorWidget()
+                : TabBarView(
+                    children: _tabStatuses
+                        .map((status) => _buildOrderListForStatus(status))
+                        .toList(),
+                  ),
       ),
     );
   }
 
-  Widget _buildBody() {
-    if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+  Widget _buildErrorWidget() {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        const SizedBox(height: 80),
+        Icon(Icons.error_outline, color: Colors.red[300], size: 60),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            _errorMessage!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, color: Colors.red),
+          ),
+        ),
+      ],
+    );
+  }
 
-    if (_errorMessage != null) {
+  Widget _buildOrderListForStatus(String status) {
+    final filtered = _orders.where((e) {
+      final s = (e as Map<String, dynamic>)['status'] as String?;
+      return s == status;
+    }).toList();
+    return RefreshIndicator(
+      onRefresh: _fetchOrderHistory,
+      child: _buildOrderList(filtered),
+    );
+  }
+
+  Widget _buildOrderList(List<dynamic> orders) {
+    if (orders.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           const SizedBox(height: 80),
-          Icon(
-            Icons.error_outline,
-            color: Colors.red[300],
-            size: 60,
-          ),
+          const Icon(Icons.receipt_long_outlined, color: Colors.grey, size: 60),
           const SizedBox(height: 16),
-          Center(
+          const Center(
             child: Text(
-              _errorMessage!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, color: Colors.red),
-            ),
-          ),
-        ],
-      );
-    }
-
-    if (_orders.isEmpty) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: const [
-          SizedBox(height: 80),
-          Icon(
-            Icons.receipt_long_outlined,
-            color: Colors.grey,
-            size: 60,
-          ),
-          SizedBox(height: 16),
-          Center(
-            child: Text(
-              'Bạn chưa có đơn hàng nào.',
+              'Chưa có đơn nào trong mục này.',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ),
         ],
       );
     }
-
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
-      itemCount: _orders.length,
+      itemCount: orders.length,
       itemBuilder: (context, index) {
-        final order = _orders[index] as Map<String, dynamic>;
+        final order = orders[index] as Map<String, dynamic>;
         final id = order['id'];
         final totalAmount = (order['total_amount'] as num?) ?? 0;
         final status = (order['status'] as String?) ?? 'unknown';
@@ -195,63 +255,75 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Mã đơn #$id',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _statusColor(status).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        status,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: _statusColor(status),
+          child: InkWell(
+            onTap: () async {
+              final needReload = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(
+                  builder: (context) => OrderDetailScreen(orderId: id as int),
+                ),
+              );
+              if (needReload == true && mounted) _fetchOrderHistory();
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Mã đơn #$id',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _statusColor(status).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          _statusLabel(status),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: _statusColor(status),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tổng tiền: ${_formatCurrency(totalAmount)}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (createdAt != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Ngày tạo: ${_formatDate(createdAt)}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Tổng tiền: ${_formatCurrency(totalAmount)}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                if (createdAt != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    'Ngày tạo: $createdAt',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
                 ],
-              ],
+              ),
             ),
           ),
         );
       },
     );
   }
+
 }
 

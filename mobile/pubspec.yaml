@@ -22,6 +22,18 @@ dependencies:
   # Lưu thông tin đăng nhập vào bộ nhớ máy (QUAN TRỌNG)
   shared_preferences: ^2.2.2
 
+  # Mở link trong trình duyệt (trang Quản trị)
+  url_launcher: ^6.2.5
+
+  # Ghi âm
+  record: ^5.0.4
+
+  # Máy ảnh / chụp ảnh
+  image_picker: ^1.0.7
+
+  # Lưu file (path cho ghi âm)
+  path_provider: ^2.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

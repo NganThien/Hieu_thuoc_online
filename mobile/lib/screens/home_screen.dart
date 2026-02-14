@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Cần thêm thư viện intl vào pubspec.yaml nếu muốn format tiền tệ đẹp
+import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
 
@@ -11,12 +12,57 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<Product>> _futureProducts;
+  List<Product>? _products;
+  bool _isLoading = true;
+  String _error = '';
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    _futureProducts = ApiService.fetchProducts();
+    _searchController.addListener(_onSearchChanged);
+    _runSearch('');
+  }
+
+  void _onSearchChanged() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _runSearch(_searchController.text);
+    });
+  }
+
+  Future<void> _runSearch(String query) async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _error = '';
+    });
+    try {
+      final list = await ApiService.fetchProducts(
+        search: query.trim().isEmpty ? null : query.trim(),
+      );
+      if (!mounted) return;
+      setState(() {
+        _products = list;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _products = null;
+        _isLoading = false;
+        _error = e.toString();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
   }
 
   // Hàm format tiền Việt (Ví dụ: 15.000 đ)
@@ -50,35 +96,71 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<List<Product>>(
-        future: _futureProducts,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Lỗi: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Chưa có thuốc nào được bán.'));
-          }
-
-          // GIAO DIỆN LƯỚI (GRID)
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // 2 cột
-                childAspectRatio: 0.75, // Tỷ lệ chiều cao/rộng của thẻ
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+      body: Column(
+        children: [
+          // Ô tìm kiếm (icon kính lúp, bo tròn)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Tìm kiếm sản phẩm...',
+                prefixIcon: const Icon(Icons.search, color: Colors.teal),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(color: Colors.teal.shade100),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: const BorderSide(color: Colors.teal, width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
               ),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final product = snapshot.data![index];
-                return _buildProductCard(product);
-              },
             ),
-          );
-        },
+          ),
+          // Nội dung: loading / lỗi / rỗng / grid
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _error.isNotEmpty
+                    ? Center(child: Text('Lỗi: $_error'))
+                    : _products == null || _products!.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Không tìm thấy sản phẩm nào',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.75,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                              ),
+                              itemCount: _products!.length,
+                              itemBuilder: (context, index) {
+                                return _buildProductCard(_products![index]);
+                              },
+                            ),
+                          ),
+          ),
+        ],
       ),
     );
   }

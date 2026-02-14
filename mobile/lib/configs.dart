@@ -7,4 +7,8 @@ class Configs {
   static String baseUrl = kIsWeb
       ? "http://127.0.0.1:5000/api"
       : "http://10.0.2.2:5000/api";
+
+  /// Địa chỉ trang Quản trị (Admin) - dùng với url_launcher
+  static String get adminUrl =>
+      kIsWeb ? "http://127.0.0.1:5000/admin" : "http://10.0.2.2:5000/admin";
 }
