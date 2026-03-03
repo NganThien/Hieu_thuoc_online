@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
+import '../widgets/category_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Product>? _products;
+  int? _selectedCategoryId; // null = "Tất cả"
   bool _isLoading = true;
   String _error = '';
   final TextEditingController _searchController = TextEditingController();
@@ -41,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final list = await ApiService.fetchProducts(
         search: query.trim().isEmpty ? null : query.trim(),
+        categoryId: _selectedCategoryId,
       );
       if (!mounted) return;
       setState(() {
@@ -55,6 +58,13 @@ class _HomeScreenState extends State<HomeScreen> {
         _error = e.toString();
       });
     }
+  }
+
+  /// Callback từ CategoryList: khi user bấm danh mục → lọc sản phẩm theo category_id.
+  void _onCategorySelected(int? categoryId) {
+    if (_selectedCategoryId == categoryId) return;
+    setState(() => _selectedCategoryId = categoryId);
+    _runSearch(_searchController.text);
   }
 
   @override
@@ -126,6 +136,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+          ),
+          // Danh mục từ API, bấm vào gọi lại lấy sản phẩm theo category_id
+          CategoryList(
+            selectedCategoryId: _selectedCategoryId,
+            onCategorySelected: _onCategorySelected,
           ),
           // Nội dung: loading / lỗi / rỗng / grid
           Expanded(

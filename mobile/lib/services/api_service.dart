@@ -1,30 +1,47 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
+import '../models/category.dart';
 import '../configs.dart';
 
 class ApiService {
   static String get baseUrl => Configs.baseUrl;
 
-  /// [search] Nếu có, gọi API với query `q` để tìm kiếm theo tên sản phẩm.
-  static Future<List<Product>> fetchProducts({String? search}) async {
+  /// [search] Tìm kiếm theo tên. [categoryId] Lọc theo danh mục (null = tất cả).
+  static Future<List<Product>> fetchProducts({
+    String? search,
+    int? categoryId,
+  }) async {
     try {
+      final params = <String, String>{};
+      if (search != null && search.trim().isNotEmpty) params['q'] = search.trim();
+      if (categoryId != null) params['category_id'] = categoryId.toString();
       final uri = Uri.parse('$baseUrl/products').replace(
-        queryParameters: (search != null && search.trim().isNotEmpty)
-            ? {'q': search.trim()}
-            : null,
+        queryParameters: params.isEmpty ? null : params,
       );
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
-        // 1. Giải mã cục JSON to đùng
         Map<String, dynamic> data = jsonDecode(response.body);
-
-        // 2. Lấy cái danh sách bên trong chìa khóa "products"
         List<dynamic> productsJson = data['products'];
-
-        // 3. Biến đổi thành danh sách Product của App
         return productsJson.map((item) => Product.fromJson(item)).toList();
+      } else {
+        throw Exception('Lỗi server: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Lỗi kết nối: $e');
+    }
+  }
+
+  /// Lấy danh sách tất cả danh mục.
+  static Future<List<Category>> fetchCategories() async {
+    try {
+      final uri = Uri.parse('$baseUrl/categories');
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        List<dynamic> list = data['categories'] ?? [];
+        return list.map((item) => Category.fromJson(item)).toList();
       } else {
         throw Exception('Lỗi server: ${response.statusCode}');
       }

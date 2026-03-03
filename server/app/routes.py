@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from . import db
-from .models import Product, User, Order, OrderDetail
+from .models import Product, User, Order, OrderDetail, Category
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # --- KHỞI TẠO BLUEPRINT ---
@@ -66,17 +66,26 @@ def login():
         }
     }), 200
 
-# --- 3. API LẤY DANH SÁCH THUỐC (hỗ trợ tìm kiếm theo tên) ---
+# --- 3. API LẤY DANH SÁCH THUỐC (tìm kiếm theo tên + lọc theo category_id) ---
 @main.route('/api/products', methods=['GET'])
 def get_products():
     q = request.args.get('q') or request.args.get('search', '').strip()
+    category_id = request.args.get('category_id', type=int)
+    query = Product.query
     if q:
-        # Lọc theo tên sản phẩm: LIKE %q% (không phân biệt hoa thường)
-        products = Product.query.filter(Product.name.ilike(f'%{q}%')).all()
-    else:
-        products = Product.query.all()
+        query = query.filter(Product.name.ilike(f'%{q}%'))
+    if category_id is not None:
+        query = query.filter(Product.category_id == category_id)
+    products = query.all()
     output = [p.to_dict() for p in products]
     return jsonify({'products': output})
+
+
+# --- 3b. API LẤY DANH SÁCH DANH MỤC ---
+@main.route('/api/categories', methods=['GET'])
+def get_categories():
+    categories = Category.query.order_by(Category.name).all()
+    return jsonify({'categories': [c.to_dict() for c in categories]})
 
 # --- 4. API CHI TIẾT THUỐC ---
 @main.route('/api/products/<int:id>', methods=['GET'])

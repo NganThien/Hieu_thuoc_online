@@ -6,8 +6,16 @@ class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    image_url = db.Column(db.Text, nullable=True)  # Ảnh đại diện danh mục (tùy chọn)
     # Quan hệ: Một danh mục có nhiều thuốc
     products = db.relationship('Product', backref='category', lazy=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'image_url': self.image_url or '',
+        }
 
 # 2. Bảng THUỐC (Cập nhật thêm category_id)
 class Product(db.Model):

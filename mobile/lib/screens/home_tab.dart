@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
+import '../widgets/category_list.dart';
 import 'product_detail_screen.dart';
 import 'search_screen.dart';
 import 'voice_record_screen.dart';
@@ -18,6 +19,8 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   late Future<List<Product>> _futureProducts;
+  /// Danh mục đang chọn (null = "Tất cả"). Khi đổi sẽ gọi lại API lấy sản phẩm theo category_id.
+  int? _selectedCategoryId;
 
   // 1. Biến để lưu tên người dùng
   String _fullName = "Khách hàng";
@@ -25,8 +28,17 @@ class _HomeTabState extends State<HomeTab> {
   @override
   void initState() {
     super.initState();
-    _futureProducts = ApiService.fetchProducts();
+    _futureProducts = ApiService.fetchProducts(categoryId: _selectedCategoryId);
     _loadUserInfo(); // 2. Gọi hàm lấy tên ngay khi mở màn hình
+  }
+
+  /// Gọi lại API lấy sản phẩm (theo danh mục đang chọn).
+  void _onCategorySelected(int? categoryId) {
+    if (_selectedCategoryId == categoryId) return;
+    setState(() {
+      _selectedCategoryId = categoryId;
+      _futureProducts = ApiService.fetchProducts(categoryId: categoryId);
+    });
   }
 
   // 3. Hàm đọc thông tin từ bộ nhớ máy
@@ -204,34 +216,10 @@ class _HomeTabState extends State<HomeTab> {
 
             const SizedBox(height: 20),
 
-            // --- 3. DANH MỤC HIỆN ĐẠI ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildCategoryItem(
-                    Icons.medication_outlined,
-                    "Thuốc",
-                    const Color(0xFFE0F2F1),
-                  ),
-                  _buildCategoryItem(
-                    Icons.health_and_safety_outlined,
-                    "Sức khỏe",
-                    const Color(0xFFFFF3E0),
-                  ),
-                  _buildCategoryItem(
-                    Icons.face_retouching_natural,
-                    "Làm đẹp",
-                    const Color(0xFFFCE4EC),
-                  ),
-                  _buildCategoryItem(
-                    Icons.local_hospital_outlined,
-                    "Thiết bị",
-                    const Color(0xFFE3F2FD),
-                  ),
-                ],
-              ),
+            // --- 3. DANH MỤC TỪ SERVER (GET /api/categories) ---
+            CategoryList(
+              selectedCategoryId: _selectedCategoryId,
+              onCategorySelected: _onCategorySelected,
             ),
 
             const SizedBox(height: 25),
@@ -336,26 +324,6 @@ class _HomeTabState extends State<HomeTab> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCategoryItem(IconData icon, String label, Color bgColor) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Icon(icon, color: Colors.black87, size: 26),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        ),
-      ],
     );
   }
 

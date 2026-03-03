@@ -11,4 +11,8 @@ class Configs {
   /// Địa chỉ trang Quản trị (Admin) - dùng với url_launcher
   static String get adminUrl =>
       kIsWeb ? "http://127.0.0.1:5000/admin" : "http://10.0.2.2:5000/admin";
+
+  /// Gốc URL server (để nối với đường dẫn ảnh tương đối, ví dụ /uploads/...)
+  static String get staticBaseUrl =>
+      kIsWeb ? "http://127.0.0.1:5000" : "http://10.0.2.2:5000";
 }

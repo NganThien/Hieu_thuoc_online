@@ -1,6 +1,6 @@
 {
-    "name": "pharmacy_app",
-    "short_name": "pharmacy_app",
+    "name": "MediGo",
+    "short_name": "MediGo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

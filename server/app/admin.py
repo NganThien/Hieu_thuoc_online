@@ -35,10 +35,29 @@ class UserAdminView(ModelView):
 
 
 # --- Category ---
+def _upload_path_categories():
+    base = current_app.static_folder or 'static'
+    path = os.path.join(base, 'uploads', 'categories')
+    os.makedirs(path, exist_ok=True)
+    return path
+
+def _image_url_relative_categories():
+    return 'uploads/categories/'
+
+
 class CategoryAdminView(ModelView):
-    column_list = ['id', 'name']
+    column_list = ['id', 'name', 'image_url']
     column_searchable_list = ['name']
-    form_columns = ['name']
+    form_columns = ['name', 'image_url']
+    form_overrides = {'image_url': ImageUploadField}
+    form_args = {
+        'image_url': {
+            'label': 'Ảnh danh mục',
+            'base_path': lambda: _upload_path_categories(),
+            'relative_path': lambda: _image_url_relative_categories(),
+            'allowed_extensions': ('jpg', 'jpeg', 'png', 'gif', 'webp'),
+        }
+    }
 
 
 # --- Product: upload ảnh, tìm kiếm theo tên, lọc theo giá ---
