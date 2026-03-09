@@ -25,19 +25,16 @@ dependencies:
   # Mở link trong trình duyệt (trang Quản trị)
   url_launcher: ^6.2.5
 
-  # Ghi âm
-  record: ^5.0.4
-
-  # Máy ảnh / chụp ảnh
-  image_picker: ^1.0.7
-
-  # Lưu file (path cho ghi âm)
-  path_provider: ^2.1.2
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "../assets/c__Users_ADMIN_AppData_Roaming_Cursor_User_workspaceStorage_b51fa1abeb94bd4412da6f8333395a18_images_app_tr_m_thu_c-a364d170-02b1-4afd-9ffe-3d2a7b0e050d.png"

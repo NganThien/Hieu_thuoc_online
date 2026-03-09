@@ -1,107 +1,76 @@
-PHẦN 1: CHỐT CÔNG NGHỆ (TECH STACK)
-Để làm nhanh, hiệu quả và dễ bảo vệ đồ án, tôi đề xuất bộ công nghệ sau (phổ biến và tài liệu nhiều):
+# Trạm thuốc | Hệ thống Ứng dụng Bán Thuốc Online 💊
 
-Mobile App (Khách hàng + Shipper): Flutter. (Code 1 lần chạy được cả Android/iOS, giao diện đẹp, thư viện Map hỗ trợ tốt).
+## 1. Tổng quan
+Trạm thuốc là hệ thống thương mại điện tử chuyên biệt dành cho nhà thuốc được thiết kế theo mô hình Client-Server. Hệ thống cung cấp luồng mua sắm khép kín: Khách hàng đặt thuốc qua Mobile App, Chủ nhà thuốc quản lý và xét duyệt đơn hàng qua Web Admin.
 
-Backend (API Server): Python (Flask hoặc FastAPI). (Dễ viết, xử lý logic nhanh, thư viện hỗ trợ AI/Xử lý ảnh tốt nếu sau này muốn mở rộng).
+## 2. Kiến trúc hệ thống
 
-Database: MySQL. (Cấu trúc bảng rõ ràng, phù hợp cho quản lý đơn hàng/kho thuốc).
+Dự án được triển khai container hóa hoàn toàn cho phần Backend và Database.
 
-Quản trị (Admin Web): Có thể dùng luôn Flutter Web hoặc ReactJS (đơn giản thì dùng thư viện Flask-Admin có sẵn của Python để đỡ phải code giao diện Admin).
+┌────────────────────┐          ┌──────────────────────┐          ┌─────────────┐
+│    Mobile App      │          │     Flask Server     │          │    MySQL    │
+│  (Flutter Client)  │ ◄──────► │    (RESTful API)     │ ◄──────► │ (Database)  │
+└────────────────────┘  JSON    └──────────────────────┘          └─────────────┘
+                                           ▲                             │
+                                           │           docker            │
+                                           ▼                             │
+                                ┌──────────────────────┐                 │
+                                │      Web Admin       │ ◄───────────────┘
+                                │    (Flask-Admin)     │
+                                └──────────────────────┘
 
-Maps: Google Maps API (hoặc OpenStreetMap/Mapbox nếu muốn miễn phí).
+## 3. Chức năng chính
 
-PHẦN 2: THIẾT KẾ CƠ SỞ DỮ LIỆU (DATABASE SCHEMAS)
-Đây là xương sống của dự án. Bạn cần tối thiểu các bảng sau trong MySQL:
+**A. Mobile App (Khách hàng)**
+* **Xác thực:** Đăng nhập, đăng ký, phân quyền truy cập.
+* **Mua sắm:** Xem danh sách thuốc, lọc theo danh mục, tìm kiếm theo tên.
+* **Giỏ hàng & Đặt đơn:** Quản lý sản phẩm trong giỏ, checkout đơn hàng.
+* **Quản lý cá nhân:** Xem lịch sử đơn hàng, theo dõi trạng thái, hủy đơn (khi đang chờ xử lý).
 
-Users: (ID, Tên, SĐT, Mật khẩu, Vai trò [Admin/User/Shipper], Địa chỉ mặc định).
+**B. Web Admin (Quản trị viên)**
+* **Quản lý Kho hàng:** Thêm/Sửa/Xóa sản phẩm, danh mục y tế.
+* **Quản lý Đơn hàng:** Xem toàn bộ đơn hàng, cập nhật trạng thái (Chờ xử lý ➔ Đang giao ➔ Đã giao).
+* **Quản lý Người dùng:** Giám sát tài khoản khách hàng.
 
-Categories: (ID, Tên danh mục - VD: Thuốc kháng sinh, Vitamin, Dụng cụ y tế).
+## 4. Công nghệ sử dụng
 
-Products (Thuốc): (ID, Tên thuốc, Giá, Ảnh, Mô tả, Cần kê đơn (Boolean), Số lượng tồn kho, Category_ID).
+| Layer | Công nghệ |
+| :--- | :--- |
+| **Mobile Frontend** | Flutter, Dart, Provider (State Management) |
+| **Backend API & Web** | Python, Flask, Flask-SQLAlchemy, Flask-Admin |
+| **Database** | MySQL 8.0 |
+| **Deployment** | Docker, Docker Compose |
 
-Orders (Đơn hàng): (ID, User_ID, Shipper_ID, Tổng tiền, Trạng thái [Chờ duyệt/Đang giao/Hoàn thành], Ảnh đơn thuốc (nếu có), Địa chỉ giao, Thời gian tạo).
+## 5. Hướng dẫn chạy dự án
 
-OrderDetails: (ID, Order_ID, Product_ID, Số lượng, Giá tại thời điểm mua).
+### Backend (Server + Database)
+Hệ thống sử dụng Docker để khởi chạy môi trường tự động. Tại thư mục `server`:
 
-Prescriptions (Đơn thuốc upload): (ID, User_ID, Link ảnh, Trạng thái duyệt [Bác sĩ đã xem/Chưa xem]).
+```bash
+# 1. Khởi động các services (MySQL + Flask)
+docker compose up -d --build
 
-PHẦN 3: CÁC CHỨC NĂNG CHÍNH CẦN CODE
-1. App cho Khách hàng (User App)
-Đăng ký/Đăng nhập: Lưu token phiên làm việc.
+# 2. Nạp dữ liệu mẫu (Tạo DB, Danh mục, Sản phẩm, Tài khoản Admin)
+docker compose exec web python seed_data.py
 
-Trang chủ: Banner khuyến mãi, danh mục thuốc, thuốc bán chạy.
+Trang Web Admin: http://localhost:5000/admin
 
-Tìm kiếm: Tìm theo tên thuốc hoặc triệu chứng (VD: "đau đầu").
+Tài khoản Admin mặc định: 0900000000 / 123456
 
-Gửi đơn thuốc (Key Feature): Chức năng cho phép user chụp ảnh đơn thuốc của bác sĩ và upload lên. Admin/Dược sĩ sẽ xem và tạo đơn hàng thay cho khách.
+Mobile App
+Mở máy ảo Android (Emulator) hoặc cắm thiết bị thật. Tại thư mục mobile:
 
-Giỏ hàng & Thanh toán: Chọn địa chỉ, chọn phương thức thanh toán (COD - Tiền mặt).
+Bash
+flutter clean
+flutter pub get
+flutter run
+6. Database Models (Core)
+User: id, phone, password, full_name, role (user/admin), address
 
-Theo dõi đơn hàng: Xem shipper đang đi đến đâu (hiển thị trên bản đồ).
+Category: id, name, image_url
 
-2. App cho Shipper
-Danh sách đơn chờ: Xem các đơn cần giao quanh khu vực.
+Product: id, category_id, name, price, image_url, description
 
-Nhận đơn: Bấm "Nhận đơn" -> Trạng thái đơn hàng đổi sang "Đang giao".
+Order: id, user_id, total_amount, status (pending/shipping/completed/cancelled)
 
-Bản đồ chỉ đường: Tích hợp Google Maps để chỉ đường từ nhà thuốc đến nhà khách.
-
-Xác nhận giao: Bấm "Đã giao" -> Hệ thống cập nhật doanh thu.
-
-3. Web Admin (Cho chủ hiệu thuốc)
-Quản lý thuốc (Thêm/Sửa/Xóa).
-
-Duyệt đơn thuốc: Xem ảnh khách gửi -> Soạn đơn thuốc -> Báo giá lại cho khách.
-
-Thống kê doanh thu ngày/tháng.
-
-PHẦN 4: LỘ TRÌNH THỰC HIỆN (STEP-BY-STEP)
-Bạn hãy chia thời gian làm 4 giai đoạn (Sprint):
-
-Giai đoạn 1: Setup & Backend (30% thời gian)
-Cài đặt môi trường: Python, MySQL, Flutter SDK.
-
-Tạo Database trong MySQL theo thiết kế ở Phần 2.
-
-Viết API bằng Flask/FastAPI:
-
-API Login/Register.
-
-API Lấy danh sách thuốc (Get All, Get Detail).
-
-API Tạo đơn hàng (Create Order).
-
-Dùng Postman để test API xem có trả về dữ liệu JSON đúng không.
-
-Giai đoạn 2: Giao diện User (Mobile App) (40% thời gian)
-Dựng giao diện (UI) bằng Flutter: Màn hình Home, Màn hình Chi tiết thuốc.
-
-Kết nối API: Gọi API từ Backend đổ dữ liệu vào App.
-
-Làm chức năng Giỏ hàng (Lưu tạm vào bộ nhớ máy hoặc Database).
-
-Làm chức năng Upload ảnh (Sử dụng thư viện image_picker trong Flutter).
-
-Giai đoạn 3: Chức năng Maps & Shipper (20% thời gian)
-Đăng ký Google Cloud Platform để lấy API Key (Maps SDK).
-
-Tích hợp Google Maps vào Flutter.
-
-Hiển thị Marker (Vị trí cửa hàng và Vị trí khách).
-
-Nâng cao (Optional): Cập nhật vị trí Shipper theo thời gian thực (Dùng Firebase Realtime Database cho dễ, không cần Socket phức tạp).
-
-Giai đoạn 4: Test & Fix lỗi (10% thời gian)
-Chạy thử luồng: Khách đặt -> Admin thấy -> Shipper nhận -> Hoàn thành.
-
-Viết báo cáo đồ án.
-
-MẸO ĐỂ ĐƯỢC ĐIỂM CAO (ĐIỂM NHẤN)
-Vì là đồ án Project 2, giảng viên sẽ thích nếu bạn có tính thực tế:
-
-Cảnh báo tương tác thuốc: Nếu khách mua 2 loại thuốc kỵ nhau, hiện cảnh báo đỏ (Logic này check ở Backend đơn giản).
-
-Tìm nhà thuốc gần nhất: Nếu hệ thống của bạn giả lập chuỗi nhà thuốc, hãy cho khách tìm cửa hàng gần nhất dựa trên GPS của họ.
-
-Dockerize: Đóng gói Backend và Database bằng Docker. (Đây là điểm cộng lớn về kỹ thuật triển khai hệ thống).
+OrderDetail: id, order_id, product_id, quantity, price

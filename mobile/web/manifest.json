@@ -1,6 +1,6 @@
 {
-    "name": "MediGo",
-    "short_name": "MediGo",
+    "name": "Trạm thuốc",
+    "short_name": "Trạm thuốc",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

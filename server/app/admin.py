@@ -111,7 +111,7 @@ class OrderDetailAdminView(ModelView):
 def init_admin(app):
     """Khởi tạo Flask-Admin và đăng ký các view."""
     # Flask-Admin 2.x dùng theme= (mặc định Bootstrap4), không còn template_mode
-    admin = Admin(app, name='Quản lý Nhà thuốc')
+    admin = Admin(app, name='Trạm thuốc - Admin')
 
     admin.add_view(UserAdminView(User, db.session, name='Người dùng', category='Hệ thống'))
     admin.add_view(CategoryAdminView(Category, db.session, name='Danh mục', category='Sản phẩm'))

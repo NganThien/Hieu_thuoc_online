@@ -5,8 +5,6 @@ import '../models/product.dart';
 import '../widgets/category_list.dart';
 import 'product_detail_screen.dart';
 import 'search_screen.dart';
-import 'voice_record_screen.dart';
-import 'camera_screen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -132,7 +130,7 @@ class _HomeTabState extends State<HomeTab> {
                     ],
                   ),
                 ),
-                // Thanh tìm kiếm (bấm vào chuyển sang trang Tìm kiếm) + Ghi âm + Máy ảnh
+                // Thanh tìm kiếm (bấm vào chuyển sang trang Tìm kiếm)
                 Positioned(
                   bottom: -25,
                   left: 20,
@@ -156,40 +154,14 @@ class _HomeTabState extends State<HomeTab> {
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         height: 50,
                         child: Row(
-                          children: [
-                            const Icon(Icons.search, color: Colors.grey),
-                            const SizedBox(width: 10),
-                            const Expanded(
+                          children: const [
+                            Icon(Icons.search, color: Colors.grey),
+                            SizedBox(width: 10),
+                            Expanded(
                               child: Text(
                                 "Bạn đang tìm thuốc gì...",
                                 style: TextStyle(color: Colors.black38),
                               ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.mic, color: Color(0xFF009688)),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const VoiceRecordScreen(),
-                                  ),
-                                );
-                              },
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.camera_alt, color: Color(0xFF009688)),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const CameraScreen(),
-                                  ),
-                                );
-                              },
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                             ),
                           ],
                         ),

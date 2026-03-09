@@ -4,8 +4,6 @@ import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
 import 'product_detail_screen.dart';
-import 'voice_record_screen.dart';
-import 'camera_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -75,24 +73,6 @@ class _SearchScreenState extends State<SearchScreen> {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(price);
   }
 
-  void _onVoiceTap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const VoiceRecordScreen(),
-      ),
-    );
-  }
-
-  void _onCameraTap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const CameraScreen(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: Column(
         children: [
-          // Ô tìm kiếm + Ghi âm + Máy ảnh
+          // Ô tìm kiếm
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
             child: Row(
@@ -133,54 +113,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         borderSide: const BorderSide(color: Color(0xFF009688), width: 1.5),
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                // Ghi âm
-                Material(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  child: InkWell(
-                    onTap: _onVoiceTap,
-                    borderRadius: BorderRadius.circular(24),
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.mic, color: Color(0xFF009688), size: 26),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Máy ảnh
-                Material(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  child: InkWell(
-                    onTap: _onCameraTap,
-                    borderRadius: BorderRadius.circular(24),
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.camera_alt, color: Color(0xFF009688), size: 26),
                     ),
                   ),
                 ),
