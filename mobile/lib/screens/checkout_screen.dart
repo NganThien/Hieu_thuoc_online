@@ -81,9 +81,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           )
           .toList(),
       'total': _totalPayment,
-      'date': now,
+      'date': now.toIso8601String(),
       'status': 'Đang xử lý',
-      'shippingInfo': _currentAddress,
+      'shippingInfo': _currentAddress != null
+          ? Map<String, dynamic>.from(_currentAddress!)
+          : null,
     };
 
     OrderService.addOrder(newOrder);
@@ -97,9 +99,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     Cart.clearCart();
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => const MainScreen(initialIndex: 0),
-      ),
+      MaterialPageRoute(builder: (_) => const MainScreen(initialIndex: 0)),
       (route) => false,
     );
   }
@@ -291,10 +291,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 SizedBox(width: 6),
                 Text(
                   'Thông tin người nhận',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -334,9 +331,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         children: List.generate(28, (index) {
           final isTeal = index % 2 == 0;
           return Expanded(
-            child: Container(
-              color: isTeal ? Colors.teal : Colors.redAccent,
-            ),
+            child: Container(color: isTeal ? Colors.teal : Colors.redAccent),
           );
         }),
       ),
@@ -347,9 +342,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Container(
       margin: const EdgeInsets.only(top: 8),
       color: Colors.white,
-      child: Column(
-        children: widget.items.map(_buildProductItem).toList(),
-      ),
+      child: Column(children: widget.items.map(_buildProductItem).toList()),
     );
   }
 
@@ -611,10 +604,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 child: const Text(
                   'Đặt hàng',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

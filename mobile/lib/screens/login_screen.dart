@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../configs.dart';
+import '../services/order_service.dart';
+import '../services/address_service.dart';
 import 'main_screen.dart';
 import 'register_screen.dart';
 
@@ -55,9 +57,14 @@ class _LoginScreenState extends State<LoginScreen> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_data', jsonEncode(data['user']));
 
+        // 3. Khởi tạo dịch vụ với dữ liệu người dùng
+        final userPhone = data['user']['phone'] as String;
+        await OrderService.init(userPhone);
+        await AddressService.init(userPhone);
+
         if (!mounted) return;
 
-        // 3. Chuyển sang màn hình chính
+        // 4. Chuyển sang màn hình chính
         // SỬA LẠI 2: Chuyển đến MainScreen (có thanh Tab) chứ không phải HomeTab
         Navigator.pushReplacement(
           context,
@@ -108,7 +115,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
-                onSubmitted: (_) => FocusScope.of(context).requestFocus(_passFocusNode),
+                onSubmitted: (_) =>
+                    FocusScope.of(context).requestFocus(_passFocusNode),
                 decoration: InputDecoration(
                   labelText: "Số điện thoại",
                   prefixIcon: const Icon(Icons.phone_android),

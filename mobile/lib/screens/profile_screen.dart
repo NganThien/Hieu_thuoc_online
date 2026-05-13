@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../configs.dart';
+import '../services/order_service.dart';
+import '../services/address_service.dart';
 import 'login_screen.dart'; // Để khi đăng xuất thì quay về đây
 import 'order_history_screen.dart';
 
@@ -72,14 +74,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // --- HÀM 2: ĐĂNG XUẤT (XÓA VÍ) ---
   Future<void> _handleLogout() async {
-    final prefs = await SharedPreferences.getInstance();
+    // 1. Xóa dữ liệu tĩnh từ các dịch vụ
+    OrderService.clearData();
+    AddressService.clearData();
 
-    // 1. Xóa sạch dữ liệu trong ví (gồm cả is_admin trong user_data)
+    // 2. Xóa sạch dữ liệu trong ví (gồm cả is_admin trong user_data)
+    final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_data');
 
     if (!mounted) return;
 
-    // 2. Đá người dùng về màn hình Đăng nhập
+    // 3. Đá người dùng về màn hình Đăng nhập
     // (pushReplacement nghĩa là thay thế hoàn toàn, không cho bấm nút Back để quay lại)
     Navigator.pushAndRemoveUntil(
       context,
@@ -209,9 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 12, 20),
@@ -224,10 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 const Text(
                   "Đơn của tôi",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: () => _openOrderHistory(),
