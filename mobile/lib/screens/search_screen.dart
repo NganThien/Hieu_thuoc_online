@@ -69,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  String formatCurrency(double price) {
+  String formatCurrency(int price) {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(price);
   }
 
@@ -97,7 +97,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     autofocus: true,
                     decoration: InputDecoration(
                       hintText: 'Bạn đang tìm thuốc gì...',
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF009688)),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(0xFF009688),
+                      ),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -110,9 +113,15 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: Color(0xFF009688), width: 1.5),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF009688),
+                          width: 1.5,
+                        ),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -122,34 +131,38 @@ class _SearchScreenState extends State<SearchScreen> {
           // Danh sách kết quả
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF009688)))
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF009688)),
+                  )
                 : _error.isNotEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text('Lỗi: $_error', textAlign: TextAlign.center),
-                        ),
-                      )
-                    : _products == null || _products!.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'Không tìm thấy sản phẩm nào',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: GridView.builder(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.72,
-                                crossAxisSpacing: 15,
-                                mainAxisSpacing: 15,
-                              ),
-                              itemCount: _products!.length,
-                              itemBuilder: (context, index) => _buildProductCard(_products![index]),
-                            ),
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text('Lỗi: $_error', textAlign: TextAlign.center),
+                    ),
+                  )
+                : _products == null || _products!.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Không tìm thấy sản phẩm nào',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.72,
+                            crossAxisSpacing: 15,
+                            mainAxisSpacing: 15,
                           ),
+                      itemCount: _products!.length,
+                      itemBuilder: (context, index) =>
+                          _buildProductCard(_products![index]),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -189,12 +202,11 @@ class _SearchScreenState extends State<SearchScreen> {
                   color: Color(0xFFF7F9FC),
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                child: Image.network(
+                child: Image.asset(
                   product.imageUrl.isNotEmpty
                       ? product.imageUrl
-                      : "https://cdn-icons-png.flaticon.com/512/883/883407.png",
+                      : "assets/images/placeholder.png",
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.medication, size: 48, color: Color(0xFF009688)),
                 ),
               ),
             ),
@@ -231,7 +243,11 @@ class _SearchScreenState extends State<SearchScreen> {
                           color: const Color(0xFF009688),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.add, color: Colors.white, size: 18),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
                     ],
                   ),

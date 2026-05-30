@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Hàm format tiền Việt (Ví dụ: 15.000 đ)
-  String formatCurrency(double price) {
+  String formatCurrency(int price) {
     final format = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
     return format.format(price);
   }
@@ -93,9 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.pop(context);
     }
     rootNavigator.push(
-      MaterialPageRoute(
-        builder: (_) => const MainScreen(initialIndex: 3),
-      ),
+      MaterialPageRoute(builder: (_) => const MainScreen(initialIndex: 3)),
     );
   }
 
@@ -165,33 +163,30 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _error.isNotEmpty
-                    ? Center(child: Text('Lỗi: $_error'))
-                    : _products == null || _products!.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'Không tìm thấy sản phẩm nào',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.75,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                              ),
-                              itemCount: _products!.length,
-                              itemBuilder: (context, index) {
-                                return _buildProductCard(_products![index]);
-                              },
-                            ),
+                ? Center(child: Text('Lỗi: $_error'))
+                : _products == null || _products!.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Không tìm thấy sản phẩm nào',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.75,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
                           ),
+                      itemCount: _products!.length,
+                      itemBuilder: (context, index) {
+                        return _buildProductCard(_products![index]);
+                      },
+                    ),
+                  ),
           ),
         ],
       ),
@@ -216,10 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: Radius.circular(15),
                 ),
               ),
-              child: Icon(
-                Icons.medication, // Icon thuốc
-                size: 60,
-                color: Colors.teal,
+              child: Image.asset(
+                product.imageUrl.isNotEmpty
+                    ? product.imageUrl
+                    : 'assets/images/placeholder.png',
+                fit: BoxFit.contain,
               ),
             ),
           ),

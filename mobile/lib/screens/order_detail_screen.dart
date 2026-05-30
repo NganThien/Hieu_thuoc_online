@@ -36,14 +36,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
       if (response.statusCode == 200) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã hủy đơn hàng.')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Đã hủy đơn hàng.')));
           Navigator.of(context).pop(true);
         }
       } else {
         final data = jsonDecode(response.body) as Map<String, dynamic>?;
-        final msg = data?['message'] as String? ?? 'Lỗi: ${response.statusCode}';
+        final msg =
+            data?['message'] as String? ?? 'Lỗi: ${response.statusCode}';
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(msg), backgroundColor: Colors.red),
@@ -159,62 +160,67 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? _buildError()
-              : _order == null
-                  ? const Center(child: Text('Không có dữ liệu'))
-                  : RefreshIndicator(
-                      onRefresh: _fetchOrderDetail,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _buildHeaderCard(),
-                            const SizedBox(height: 20),
-                            _buildProductList(),
-                            const SizedBox(height: 20),
-                            _buildTotalCard(),
-                            if ((_order!['status'] as String?) == 'pending') ...[
-                              const SizedBox(height: 24),
-                              SizedBox(
-                                height: 48,
-                                child: ElevatedButton.icon(
-                                  onPressed: () async {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder: (ctx) => AlertDialog(
-                                        title: const Text('Xác nhận hủy đơn'),
-                                        content: const Text(
-                                          'Bạn có chắc muốn hủy đơn hàng này?',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.of(ctx).pop(false),
-                                            child: const Text('Không'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () => Navigator.of(ctx).pop(true),
-                                            child: const Text('Đồng ý', style: TextStyle(color: Colors.red)),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    if (confirm == true && mounted) _cancelOrder();
-                                  },
-                                  icon: const Icon(Icons.cancel_outlined, size: 22),
-                                  label: const Text('Hủy đơn hàng'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                  ),
+          ? _buildError()
+          : _order == null
+          ? const Center(child: Text('Không có dữ liệu'))
+          : RefreshIndicator(
+              onRefresh: _fetchOrderDetail,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildHeaderCard(),
+                    const SizedBox(height: 20),
+                    _buildProductList(),
+                    const SizedBox(height: 20),
+                    _buildTotalCard(),
+                    if ((_order!['status'] as String?) == 'pending') ...[
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Xác nhận hủy đơn'),
+                                content: const Text(
+                                  'Bạn có chắc muốn hủy đơn hàng này?',
                                 ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(ctx).pop(false),
+                                    child: const Text('Không'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(ctx).pop(true),
+                                    child: const Text(
+                                      'Đồng ý',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ],
+                            );
+                            if (confirm == true && mounted) _cancelOrder();
+                          },
+                          icon: const Icon(Icons.cancel_outlined, size: 22),
+                          label: const Text('Hủy đơn hàng'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -243,9 +249,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -262,7 +266,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _statusColor(status).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -285,10 +292,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'Ngày đặt: ${_formatDate(createdAt)}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
               ],
             ),
@@ -321,10 +325,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           padding: EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             'Sản phẩm',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
         ...items.map((e) {
@@ -354,18 +355,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: imageUrl != null && imageUrl.toString().trim().isNotEmpty
-                        ? Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(
-                              Icons.medication,
-                              color: Colors.grey[400],
-                              size: 32,
-                            ),
-                          )
+                    child:
+                        imageUrl != null &&
+                            imageUrl.toString().trim().isNotEmpty
+                        ? Image.asset(imageUrl, fit: BoxFit.cover)
                         : Icon(
-                            Icons.medication,
+                            Icons.medical_services,
                             color: Colors.grey[400],
                             size: 32,
                           ),
@@ -418,9 +413,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Card(
       elevation: 2,
       color: const Color(0xFF009688).withOpacity(0.08),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -428,10 +421,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           children: [
             const Text(
               'Tổng cộng',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Text(
               _formatCurrency(total),

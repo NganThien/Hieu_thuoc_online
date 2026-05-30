@@ -34,6 +34,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  # Khai báo đường dẫn chứa ảnh
+  assets:
+    - assets/images/
+
 flutter_icons:
   android: true
   ios: true

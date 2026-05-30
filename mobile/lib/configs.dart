@@ -6,7 +6,7 @@ class Configs {
   // - Mobile (Android/iOS thật): phải dùng IP LAN của máy chạy server (VD: 192.168.1.100)
   //
   // TODO: ĐỔI '192.168.1.100' THÀNH ĐỊA CHỈ IP THỰC TẾ CỦA MÁY CHẠY FLASK TRONG MẠNG LAN.
-  static const String _lanIp = "192.168.1.249";
+  static const String _lanIp = "192.168.1.14";
 
   static String baseUrl = kIsWeb
       ? "http://127.0.0.1:5000/api"

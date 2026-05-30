@@ -32,10 +32,10 @@ class Product(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'price': float(self.price),
+            'price': int(self.price) if self.price else 0,
             'description': self.description,
-            'image_url': self.image_url,
-            'category_name': self.category.name if self.category else "Chưa phân loại"
+            'imageUrl': self.image_url,
+            'category': self.category.name if self.category else "Chưa phân loại"
         }
 
 # 3. Bảng USER (Người dùng)

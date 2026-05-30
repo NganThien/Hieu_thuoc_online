@@ -17,7 +17,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _quantity = 1; // Mặc định mua 1 cái
 
   // Hàm định dạng tiền (VND)
-  String formatCurrency(double price) {
+  String formatCurrency(int price) {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(price);
   }
 
@@ -32,9 +32,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final rootNavigator = Navigator.of(context, rootNavigator: true);
     Navigator.pop(context);
     rootNavigator.push(
-      MaterialPageRoute(
-        builder: (_) => CheckoutScreen(items: checkoutItems),
-      ),
+      MaterialPageRoute(builder: (_) => CheckoutScreen(items: checkoutItems)),
     );
   }
 
@@ -68,10 +66,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Hero(
                 tag:
                     'product_img_${widget.product.id}', // Hiệu ứng bay từ màn hình trước
-                child: Image.network(
+                child: Image.asset(
                   widget.product.imageUrl.isNotEmpty
                       ? widget.product.imageUrl
-                      : "https://cdn-icons-png.flaticon.com/512/883/883407.png",
+                      : "assets/images/placeholder.png",
                   fit: BoxFit.contain,
                 ),
               ),

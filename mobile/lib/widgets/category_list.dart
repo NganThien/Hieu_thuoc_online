@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../services/api_service.dart';
-import '../configs.dart';
 
 /// Widget danh sách danh mục cuộn ngang.
 /// Tự gọi API GET /api/categories, hiển thị loading, và báo lại khi user chọn danh mục.
@@ -84,11 +83,13 @@ class _CategoryListState extends State<CategoryList> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         children: [
           _buildItem(categoryId: null, name: 'Tất cả', imageUrl: null),
-          ..._categories.map((c) => _buildItem(
-                categoryId: c.id,
-                name: c.name,
-                imageUrl: c.imageUrl.isEmpty ? null : c.imageUrl,
-              )),
+          ..._categories.map(
+            (c) => _buildItem(
+              categoryId: c.id,
+              name: c.name,
+              imageUrl: c.imageUrl.isEmpty ? null : c.imageUrl,
+            ),
+          ),
         ],
       ),
     );
@@ -122,18 +123,11 @@ class _CategoryListState extends State<CategoryList> {
               ),
               child: imageUrl != null && imageUrl.isNotEmpty
                   ? ClipOval(
-                      child: Image.network(
-                        imageUrl.startsWith('http')
-                            ? imageUrl
-                            : '${Configs.staticBaseUrl}/static/$imageUrl',
+                      child: Image.asset(
+                        imageUrl,
                         fit: BoxFit.cover,
                         width: 48,
                         height: 48,
-                        errorBuilder: (_, __, ___) => Icon(
-                          Icons.category,
-                          color: isSelected ? Colors.white : Colors.teal,
-                          size: 24,
-                        ),
                       ),
                     )
                   : Icon(

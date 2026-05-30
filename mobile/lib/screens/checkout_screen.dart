@@ -52,15 +52,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
-  double get _subTotal {
-    double total = 0;
+  int get _subTotal {
+    int total = 0;
     for (final item in widget.items) {
       total += item.product.price * item.quantity;
     }
     return total;
   }
 
-  double get _totalPayment => _subTotal + _shippingFee - _shippingDiscount;
+  double get _totalPayment =>
+      _subTotal.toDouble() + _shippingFee - _shippingDiscount;
 
   String _formatCurrency(num amount) {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(amount);
@@ -360,10 +361,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               color: Colors.grey[200],
             ),
             clipBehavior: Clip.antiAlias,
-            child: Image.network(
+            child: Image.asset(
               item.product.imageUrl.isNotEmpty
                   ? item.product.imageUrl
-                  : 'https://cdn-icons-png.flaticon.com/512/883/883407.png',
+                  : 'assets/images/placeholder.png',
               fit: BoxFit.cover,
             ),
           ),

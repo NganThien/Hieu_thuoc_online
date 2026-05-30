@@ -1,7 +1,8 @@
 class Product {
-  final int id;
+  final String id;
   final String name;
-  final double price;
+  final int price;
+  final String category;
   final String description;
   final String imageUrl;
 
@@ -9,19 +10,32 @@ class Product {
     required this.id,
     required this.name,
     required this.price,
+    required this.category,
     required this.description,
     required this.imageUrl,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] ?? 0,
+      id: json['id']?.toString() ?? '',
       name: json['name'] ?? 'Không tên',
-      price: double.tryParse(json['price'].toString()) ?? 0.0,
-      // Trong JSON không có mô tả thì để trống
+      price: json['price'] is int
+          ? json['price'] as int
+          : int.tryParse(json['price'].toString()) ?? 0,
+      category: json['category'] ?? 'Khác',
       description: json['description'] ?? 'Không có mô tả',
-      // Sửa 'image_url' thành 'image' cho khớp với server của bạn
-      imageUrl: json['image_url'] ?? json['image'] ?? '',
+      imageUrl: json['imageUrl'] ?? json['image_url'] ?? json['image'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'price': price,
+      'category': category,
+      'description': description,
+      'imageUrl': imageUrl,
+    };
   }
 }

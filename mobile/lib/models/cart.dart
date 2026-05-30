@@ -37,7 +37,7 @@ class Cart {
   static double getTotalPrice() {
     double total = 0;
     for (var item in items) {
-      total += (item.product.price * item.quantity);
+      total += (item.product.price * item.quantity).toDouble();
     }
     return total;
   }

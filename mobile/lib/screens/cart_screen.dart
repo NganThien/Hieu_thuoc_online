@@ -23,8 +23,8 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  double _getSelectedTotal() {
-    double total = 0;
+  int _getSelectedTotal() {
+    int total = 0;
     for (int i = 0; i < Cart.items.length; i++) {
       if (i < _selectedItems.length && _selectedItems[i]) {
         total += Cart.items[i].product.price * Cart.items[i].quantity;
@@ -44,7 +44,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   // Hàm định dạng tiền
-  String formatCurrency(double price) {
+  String formatCurrency(int price) {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(price);
   }
 
@@ -55,9 +55,9 @@ class _CartScreenState extends State<CartScreen> {
 
   void _goToCheckout() {
     if (Cart.items.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Giỏ hàng đang trống!")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Giỏ hàng đang trống!")));
       return;
     }
 
@@ -65,16 +65,16 @@ class _CartScreenState extends State<CartScreen> {
     final selected = _getSelectedItems();
     if (selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Vui lòng tích chọn ít nhất một món để đặt hàng!")),
+        const SnackBar(
+          content: Text("Vui lòng tích chọn ít nhất một món để đặt hàng!"),
+        ),
       );
       return;
     }
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => CheckoutScreen(items: selected),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => CheckoutScreen(items: selected)));
   }
 
   @override
@@ -102,7 +102,9 @@ class _CartScreenState extends State<CartScreen> {
                     itemBuilder: (context, index) {
                       _syncSelectedList();
                       final item = Cart.items[index];
-                      final isSelected = index < _selectedItems.length && _selectedItems[index];
+                      final isSelected =
+                          index < _selectedItems.length &&
+                          _selectedItems[index];
                       return Opacity(
                         opacity: isSelected ? 1.0 : 0.6,
                         child: Card(
@@ -128,70 +130,71 @@ class _CartScreenState extends State<CartScreen> {
                                   activeColor: const Color(0xFF009688),
                                 ),
                                 // Ảnh nhỏ
-                              Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(10),
+                                Container(
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Image.asset(
+                                    item.product.imageUrl.isNotEmpty
+                                        ? item.product.imageUrl
+                                        : "assets/images/placeholder.png",
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                child: Image.network(
-                                  item.product.imageUrl.isNotEmpty
-                                      ? item.product.imageUrl
-                                      : "https://cdn-icons-png.flaticon.com/512/883/883407.png",
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              // Thông tin
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.product.name,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                const SizedBox(width: 15),
+                                // Thông tin
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.product.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      formatCurrency(item.product.price),
-                                      style: const TextStyle(
-                                        color: Color(0xFF009688),
-                                        fontWeight: FontWeight.bold,
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        formatCurrency(item.product.price),
+                                        style: const TextStyle(
+                                          color: Color(0xFF009688),
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      "Số lượng: ${item.quantity}",
-                                      style: const TextStyle(
-                                        color: Colors.grey,
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        "Số lượng: ${item.quantity}",
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              // Nút Xóa
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.red,
+                                // Nút Xóa
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    Cart.removeFromCart(index);
+                                    if (index < _selectedItems.length) {
+                                      _selectedItems.removeAt(index);
+                                    }
+                                    _updateCart();
+                                  },
                                 ),
-                                onPressed: () {
-                                  Cart.removeFromCart(index);
-                                  if (index < _selectedItems.length) {
-                                    _selectedItems.removeAt(index);
-                                  }
-                                  _updateCart();
-                                },
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                         ),
                       );
                     },

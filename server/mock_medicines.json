@@ -1,0 +1,482 @@
+[
+    {
+        "id": "MED1001",
+        "name": "Thuốc giảm đau hạ sốt Panadol Extra (Vỉ 12 viên)",
+        "price": 16000,
+        "category": "Thuốc không kê đơn",
+        "description": "Giảm đau đầu, đau cơ, hạ sốt nhanh chóng. Chứa Paracetamol và Caffeine.",
+        "imageUrl": "assets/images/panadol_extra.jpg"
+    },
+    {
+        "id": "MED1002",
+        "name": "Nước muối sinh lý Natri Clorid 0.9% (Chai 500ml)",
+        "price": 6000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Dùng để súc miệng, rửa vết thương, vệ sinh mũi họng hàng ngày.",
+        "imageUrl": "assets/images/nuoc_muoi.jpg"
+    },
+    {
+        "id": "MED1003",
+        "name": "Viên ngậm ho Bảo Thanh (Hộp 20 viên)",
+        "price": 35000,
+        "category": "Thực phẩm chức năng",
+        "description": "Thành phần thảo dược, giúp bổ phế, trừ ho, hóa đờm hiệu quả.",
+        "imageUrl": "assets/images/thuoc_ho_bao_thanh.jpg"
+    },
+    {
+        "id": "MED1004",
+        "name": "Men vi sinh Enterogermina trị tiêu chảy (Ống 5ml)",
+        "price": 8000,
+        "category": "Thuốc không kê đơn",
+        "description": "Bổ sung bào tử lợi khuẩn, cân bằng hệ vi sinh đường ruột.",
+        "imageUrl": "assets/images/menvisinh.jpg"
+    },
+    {
+        "id": "MED1005",
+        "name": "Bông y tế Bạch Tuyết (Gói 100g)",
+        "price": 22000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "100% cotton tự nhiên, mềm mịn, thấm hút tốt, dùng trong y tế.",
+        "imageUrl": "assets/images/bongyte.jpg"
+    },
+    {
+        "id": "MED1006",
+        "name": "Viên sủi Vitamin C Plusssz hương Cam",
+        "price": 45000,
+        "category": "Thực phẩm chức năng",
+        "description": "Bổ sung vitamin C, tăng cường sức đề kháng, giải nhiệt cơ thể.",
+        "imageUrl": "assets/images/Csuihuongcam.jpg"
+    },
+    {
+        "id": "MED1007",
+        "name": "Thuốc trị tiêu chảy Smecta Go (12 gói)",
+        "price": 60000,
+        "category": "Thuốc không kê đơn",
+        "description": "Hỗ trợ điều trị tiêu chảy cấp và mãn tính, bảo vệ niêm mạc ruột.",
+        "imageUrl": "assets/images/thuoctieuchay.jpg"
+    },
+    {
+        "id": "MED1008",
+        "name": "Bù nước Oresol 245 (Hộp 20 gói)",
+        "price": 40000,
+        "category": "Thuốc không kê đơn",
+        "description": "Bù nước và điện giải khi bị sốt cao, tiêu chảy hoặc vận động nhiều.",
+        "imageUrl": "assets/images/orezol.jpg"
+    },
+    {
+        "id": "MED1009",
+        "name": "Cao dán giảm đau Salonpas (Hộp 20 gói)",
+        "price": 32000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Giảm đau mỏi cơ, đau lưng, bong gân, đau vai gáy.",
+        "imageUrl": "assets/images/salonpas.jpg"
+    },
+    {
+        "id": "MED1010",
+        "name": "Thuốc cảm cúm Decolgen Forte",
+        "price": 12000,
+        "category": "Thuốc không kê đơn",
+        "description": "Trị các triệu chứng cảm cúm, nhức đầu, sổ mũi, nghẹt mũi.",
+        "imageUrl": "assets/images/thuoccamcum.jpg"
+    },
+    {
+        "id": "MED1011",
+        "name": "Dầu gió xanh Con Ó (Chai 24ml)",
+        "price": 65000,
+        "category": "Thực phẩm chức năng",
+        "description": "Giảm cảm lạnh, nhức đầu, đau bụng, côn trùng cắn.",
+        "imageUrl": "assets/images/daugioxanh.jpg"
+    },
+    {
+        "id": "MED1012",
+        "name": "Băng cá nhân Urgo Transparent (100 miếng)",
+        "price": 85000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Băng cá nhân trong suốt, chống thấm nước, bảo vệ vết thương nhỏ.",
+        "imageUrl": "assets/images/bangdancanhan.jpg"
+    },
+    {
+        "id": "MED1013",
+        "name": "Khẩu trang y tế 4 lớp Famapro (Hộp 50 cái)",
+        "price": 40000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Kháng khuẩn, lọc bụi mịn, bảo vệ hệ hô hấp.",
+        "imageUrl": "assets/images/khautrangyte.jpg"
+    },
+    {
+        "id": "MED1014",
+        "name": "Nước rửa tay khô Lifebuoy (Chai 50ml)",
+        "price": 25000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Diệt 99.9% vi khuẩn mà không cần rửa lại với nước.",
+        "imageUrl": "assets/images/nuocruataykho.jpg"
+    },
+    {
+        "id": "MED1015",
+        "name": "Cồn y tế 70 độ Vĩnh Phúc (60ml)",
+        "price": 5000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Sát khuẩn vết thương, sát trùng dụng cụ y tế.",
+        "imageUrl": "assets/images/conyte70.jpg"
+    },
+    {
+        "id": "MED1016",
+        "name": "Nhiệt kế thủy ngân Aurora",
+        "price": 15000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Đo nhiệt độ cơ thể chính xác, dễ sử dụng.",
+        "imageUrl": "assets/images/nhietkethuyngan.jpg"
+    },
+    {
+        "id": "MED1017",
+        "name": "Thuốc trị trào ngược dạ dày Gaviscon",
+        "price": 145000,
+        "category": "Thuốc không kê đơn",
+        "description": "Giảm nhanh các triệu chứng ợ nóng, khó tiêu, trào ngược axit.",
+        "imageUrl": "assets/images/thuoctraonguocdaday.jpg"
+    },
+    {
+        "id": "MED1018",
+        "name": "Viên ngậm giảm đau họng Strepsils Cool",
+        "price": 32000,
+        "category": "Thuốc không kê đơn",
+        "description": "Kháng khuẩn, làm dịu cổ họng, giảm đau rát họng.",
+        "imageUrl": "assets/images/vienngamdauhong.jpg"
+    },
+    {
+        "id": "MED1019",
+        "name": "Thuốc kháng viêm Alpha Choay (Vỉ 15 viên)",
+        "price": 35000,
+        "category": "Thuốc không kê đơn",
+        "description": "Giảm sưng phù nề sau chấn thương hoặc phẫu thuật.",
+        "imageUrl": "assets/images/thuockhangviem.jpg"
+    },
+    {
+        "id": "MED1020",
+        "name": "Siro ho Prospan (Chai 100ml)",
+        "price": 75000,
+        "category": "Thuốc không kê đơn",
+        "description": "Chiết xuất lá thường xuân, trị ho, long đờm an toàn cho trẻ em.",
+        "imageUrl": "assets/images/siroho.jpg"
+    },
+    {
+        "id": "MED1021",
+        "name": "Dung dịch sát khuẩn Povidine 10%",
+        "price": 12000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Sát khuẩn vết thương hở, chống nhiễm trùng.",
+        "imageUrl": "assets/images/dungdichsatkhuan.jpg"
+    },
+    {
+        "id": "MED1022",
+        "name": "Thuốc cảm Tiffy Dey (Vỉ 4 viên)",
+        "price": 5000,
+        "category": "Thuốc không kê đơn",
+        "description": "Giảm các triệu chứng cảm, sổ mũi, nghẹt mũi, nhức đầu.",
+        "imageUrl": "assets/images/thuoccamtyffy.jpg"
+    },
+    {
+        "id": "MED1023",
+        "name": "Viên uống Berberin trị tiêu chảy",
+        "price": 10000,
+        "category": "Thực phẩm chức năng",
+        "description": "Thảo dược trị tiêu chảy, rối loạn tiêu hóa, lỵ amip.",
+        "imageUrl": "assets/images/becberintieuchay.jpg"
+    },
+    {
+        "id": "MED1024",
+        "name": "Thuốc xịt mũi Xisat (Chai 75ml)",
+        "price": 30000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Nước biển sâu làm sạch thông thoáng mũi, kháng khuẩn.",
+        "imageUrl": "assets/images/thuocxitmui.jpg"
+    },
+    {
+        "id": "MED1025",
+        "name": "Viên sủi Berocca Performance Mango",
+        "price": 78000,
+        "category": "Thực phẩm chức năng",
+        "description": "Bổ sung Vitamin B, C và kẽm. Tăng cường năng lượng, tỉnh táo.",
+        "imageUrl": "assets/images/viensuiberrocca.jpg"
+    },
+    {
+        "id": "MED1026",
+        "name": "Thuốc nhỏ mắt V.Rohto (Chai 13ml)",
+        "price": 50000,
+        "category": "Thuốc không kê đơn",
+        "description": "Giảm mỏi mắt, đỏ mắt, ngứa mắt, bảo vệ giác mạc.",
+        "imageUrl": "assets/images/thuocnhomat.jpg"
+    },
+    {
+        "id": "MED1027",
+        "name": "Kem bôi da Yoosun Rau Má (Tuýp 25g)",
+        "price": 25000,
+        "category": "Thực phẩm chức năng",
+        "description": "Trị rôm sảy, mẩn ngứa, làm mát da, mờ sẹo thâm.",
+        "imageUrl": "assets/images/kemboirauma.jpg"
+    },
+    {
+        "id": "MED1028",
+        "name": "Bao cao su Durex Invisible (Hộp 3 cái)",
+        "price": 75000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Siêu mỏng, truyền nhiệt tốt, mang lại cảm giác chân thật.",
+        "imageUrl": "assets/images/baocaosudurex.jpg"
+    },
+    {
+        "id": "MED1029",
+        "name": "Que thử thai Quickstick",
+        "price": 20000,
+        "category": "Thiết bị, Vật tư y tế",
+        "description": "Phát hiện thai sớm, kết quả chính xác 99%.",
+        "imageUrl": "assets/images/quethuthai.jpg"
+    },
+    {
+        "id": "MED1030",
+        "name": "Dầu tràm khuynh diệp OPC (Chai 25ml)",
+        "price": 60000,
+        "category": "Thực phẩm chức năng",
+        "description": "Giữ ấm cơ thể, phòng cảm lạnh, trị vết côn trùng cắn cho bé.",
+        "imageUrl": "assets/images/dautramkhuynhdiep.jpg"
+    },
+    {
+        "id": "MED1031",
+        "name": "Yến sào cao cấp Sanest (Lọ 70ml)",
+        "price": 35000,
+        "category": "Bồi Bổ & Đề Kháng",
+        "description": "Bồi bổ sức khỏe, tăng cường sinh lực, phục hồi mệt mỏi.",
+        "imageUrl": "assets/images/yensao.jpg"
+    },
+    {
+        "id": "MED1032",
+        "name": "Viên uống Vitamin tổng hợp Centrum",
+        "price": 350000,
+        "category": "Bồi Bổ & Đề Kháng",
+        "description": "Cung cấp hơn 20 loại vitamin và khoáng chất thiết yếu mỗi ngày.",
+        "imageUrl": "assets/images/centrum.jpg"
+    },
+    {
+        "id": "MED1033",
+        "name": "Nước hồng sâm Hàn Quốc (Hộp 10 chai)",
+        "price": 450000,
+        "category": "Bồi Bổ & Đề Kháng",
+        "description": "Giúp tỉnh táo, giảm stress, tăng sức đề kháng mạnh mẽ.",
+        "imageUrl": "assets/images/hongsam.jpg"
+    },
+    {
+        "id": "MED1034",
+        "name": "Đông trùng hạ thảo nguyên con (Hộp 10g)",
+        "price": 800000,
+        "category": "Bồi Bổ & Đề Kháng",
+        "description": "Dược liệu quý hiếm, hỗ trợ chức năng phổi và thận.",
+        "imageUrl": "assets/images/dongtrunghathao.jpg"
+    },
+    {
+        "id": "MED1035",
+        "name": "Thực phẩm bảo vệ sức khỏe Pharmaton",
+        "price": 150000,
+        "category": "Bồi Bổ & Đề Kháng",
+        "description": "Bổ sung năng lượng cho người làm việc trí óc căng thẳng.",
+        "imageUrl": "assets/images/pharmaton.jpg"
+    },
+    {
+        "id": "MED1036",
+        "name": "Dầu gội dược liệu Thái Dương 7",
+        "price": 100000,
+        "category": "Chăm Sóc Cá Nhân",
+        "description": "7 ngày không gàu không ngứa, chiết xuất thảo mộc tự nhiên.",
+        "imageUrl": "assets/images/daugoithaiduong.jpg"
+    },
+    {
+        "id": "MED1037",
+        "name": "Sữa rửa mặt Cerave cho da mụn",
+        "price": 380000,
+        "category": "Chăm Sóc Cá Nhân",
+        "description": "Làm sạch sâu, không gây khô da, phục hồi hàng rào bảo vệ da.",
+        "imageUrl": "assets/images/suaruamatcerave.jpg"
+    },
+    {
+        "id": "MED1038",
+        "name": "Nước súc miệng Listerine Cool Mint",
+        "price": 85000,
+        "category": "Chăm Sóc Cá Nhân",
+        "description": "Diệt khuẩn mảng bám, hơi thở thơm mát suốt 24h.",
+        "imageUrl": "assets/images/listerine.jpg"
+    },
+    {
+        "id": "MED1039",
+        "name": "Sữa tắm gội toàn thân Cetaphil",
+        "price": 120000,
+        "category": "Chăm Sóc Cá Nhân",
+        "description": "Dành cho da nhạy cảm, không chứa xà phòng.",
+        "imageUrl": "assets/images/suatamcetaphil.jpg"
+    },
+    {
+        "id": "MED1040",
+        "name": "Kem đánh răng Sensodyne giảm ê buốt",
+        "price": 65000,
+        "category": "Chăm Sóc Cá Nhân",
+        "description": "Bảo vệ răng nhạy cảm, làm dịu cơn ê buốt tức thì.",
+        "imageUrl": "assets/images/sensodyne.jpg"
+    },
+    {
+        "id": "MED1041",
+        "name": "Viên uống Glucosamine Kirkland",
+        "price": 650000,
+        "category": "Cơ - Xương - Khớp",
+        "description": "Hỗ trợ bôi trơn sụn khớp, giảm đau nhức xương khớp.",
+        "imageUrl": "assets/images/glucosamine.jpg"
+    },
+    {
+        "id": "MED1042",
+        "name": "Canxi Corbiere dạng ống (Hộp 24 ống)",
+        "price": 145000,
+        "category": "Cơ - Xương - Khớp",
+        "description": "Bổ sung canxi hữu cơ dễ hấp thu, chống loãng xương.",
+        "imageUrl": "assets/images/canxicorbiere.jpg"
+    },
+    {
+        "id": "MED1043",
+        "name": "Dầu xoa bóp xương khớp Thái Lan",
+        "price": 50000,
+        "category": "Cơ - Xương - Khớp",
+        "description": "Làm ấm cơ, giảm đau mỏi vai gáy và thấp khớp.",
+        "imageUrl": "assets/images/dauxoabop.jpg"
+    },
+    {
+        "id": "MED1044",
+        "name": "Miếng dán nhiệt giảm đau bụng kinh",
+        "price": 25000,
+        "category": "Cơ - Xương - Khớp",
+        "description": "Tỏa nhiệt ấm áp lên đến 12h, làm dịu cơn đau co thắt.",
+        "imageUrl": "assets/images/miengdannhiet.jpg"
+    },
+    {
+        "id": "MED1045",
+        "name": "Thuốc xịt giảm đau thể thao Deep Heat",
+        "price": 95000,
+        "category": "Cơ - Xương - Khớp",
+        "description": "Giảm đau cơ bắp tức thì sau khi chơi thể thao hoặc vận động mạnh.",
+        "imageUrl": "assets/images/xitdeepheat.jpg"
+    },
+    {
+        "id": "MED1046",
+        "name": "Thuốc dạ dày chữ Y (Yumangel)",
+        "price": 95000,
+        "category": "Dạ Dày & Tiêu Hóa",
+        "description": "Bọc niêm mạc dạ dày, giảm ngay cơn đau thượng vị.",
+        "imageUrl": "assets/images/thuocchuy.jpg"
+    },
+    {
+        "id": "MED1047",
+        "name": "Men tiêu hóa BioGaia dạng giọt",
+        "price": 395000,
+        "category": "Dạ Dày & Tiêu Hóa",
+        "description": "Bổ sung lợi khuẩn đường ruột, giảm nôn trớ ở trẻ sơ sinh.",
+        "imageUrl": "assets/images/biogaia.jpg"
+    },
+    {
+        "id": "MED1048",
+        "name": "Trà dây Bstar hỗ trợ trị HP",
+        "price": 120000,
+        "category": "Dạ Dày & Tiêu Hóa",
+        "description": "Thảo dược tự nhiên giúp tiêu diệt vi khuẩn HP dạ dày.",
+        "imageUrl": "assets/images/traday.jpg"
+    },
+    {
+        "id": "MED1049",
+        "name": "Viên sủi tiêu thực Pepto Bismol",
+        "price": 180000,
+        "category": "Dạ Dày & Tiêu Hóa",
+        "description": "Trị chứng đầy hơi, khó tiêu, ăn không tiêu.",
+        "imageUrl": "assets/images/peptobismol.jpg"
+    },
+    {
+        "id": "MED1050",
+        "name": "Thuốc giảm tiết axit Omeprazol",
+        "price": 45000,
+        "category": "Dạ Dày & Tiêu Hóa",
+        "description": "Điều trị viêm loét dạ dày tá tràng, trào ngược dạ dày thực quản.",
+        "imageUrl": "assets/images/omeprazol.jpg"
+    },
+    {
+        "id": "MED1051",
+        "name": "Viên uống trắng da Glutathione 600",
+        "price": 450000,
+        "category": "Hỗ Trợ Làm Đẹp",
+        "description": "Làm mờ sạm nám, dưỡng da trắng sáng từ bên trong.",
+        "imageUrl": "assets/images/glutathione.jpg"
+    },
+    {
+        "id": "MED1052",
+        "name": "Collagen lựu đỏ Hàn Quốc (Hộp 30 gói)",
+        "price": 320000,
+        "category": "Hỗ Trợ Làm Đẹp",
+        "description": "Tăng độ đàn hồi cho da, ngăn ngừa nếp nhăn và lão hóa.",
+        "imageUrl": "assets/images/collagenluudo.jpg"
+    },
+    {
+        "id": "MED1053",
+        "name": "Vitamin E đỏ Nga 400IU",
+        "price": 150000,
+        "category": "Hỗ Trợ Làm Đẹp",
+        "description": "Dưỡng ẩm cho da khô, hỗ trợ nội tiết tố nữ.",
+        "imageUrl": "assets/images/vitaminedo.jpg"
+    },
+    {
+        "id": "MED1054",
+        "name": "Viên uống hoa anh thảo Blackmores",
+        "price": 550000,
+        "category": "Hỗ Trợ Làm Đẹp",
+        "description": "Giảm mụn nội tiết, điều hòa kinh nguyệt.",
+        "imageUrl": "assets/images/hoaanhthao.jpg"
+    },
+    {
+        "id": "MED1055",
+        "name": "Kem trị mụn thâm Megaduo",
+        "price": 125000,
+        "category": "Hỗ Trợ Làm Đẹp",
+        "description": "Đẩy mụn ẩn, mờ vết thâm do mụn để lại hiệu quả.",
+        "imageUrl": "assets/images/megaduo.jpg"
+    },
+    {
+        "id": "MED1056",
+        "name": "Sữa non Colostrum Úc",
+        "price": 420000,
+        "category": "Mẹ & Bé",
+        "description": "Tăng cường miễn dịch toàn diện cho trẻ nhỏ hay ốm vặt.",
+        "imageUrl": "assets/images/suanon.jpg"
+    },
+    {
+        "id": "MED1057",
+        "name": "Phấn rôm em bé Johnson's Baby",
+        "price": 45000,
+        "category": "Mẹ & Bé",
+        "description": "Thấm hút mồ hôi, giữ da bé luôn khô thoáng, thơm mát.",
+        "imageUrl": "assets/images/phanrom.jpg"
+    },
+    {
+        "id": "MED1058",
+        "name": "Kem chống hăm Sudocrem (Hũ 60g)",
+        "price": 110000,
+        "category": "Mẹ & Bé",
+        "description": "Làm dịu vết hăm tã, trị bỏng nhẹ và mẩn ngứa cho bé sơ sinh.",
+        "imageUrl": "assets/images/sudocrem.jpg"
+    },
+    {
+        "id": "MED1059",
+        "name": "Vitamin D3 K2 MK7 cho bé",
+        "price": 280000,
+        "category": "Mẹ & Bé",
+        "description": "Hỗ trợ hấp thu canxi, giúp bé phát triển chiều cao tối đa.",
+        "imageUrl": "assets/images/vitamind3k2.jpg"
+    },
+    {
+        "id": "MED1060",
+        "name": "Nước muối sinh lý kháng viêm tép vàng",
+        "price": 150000,
+        "category": "Mẹ & Bé",
+        "description": "Chuyên dùng để rửa mũi khi bé bị sổ mũi, ngạt mũi.",
+        "imageUrl": "assets/images/nuocmuoitepvang.jpg"
+    }
+]

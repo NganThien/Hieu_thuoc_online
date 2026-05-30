@@ -17,6 +17,7 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   late Future<List<Product>> _futureProducts;
+
   /// Danh mục đang chọn (null = "Tất cả"). Khi đổi sẽ gọi lại API lấy sản phẩm theo category_id.
   int? _selectedCategoryId;
 
@@ -53,7 +54,7 @@ class _HomeTabState extends State<HomeTab> {
     }
   }
 
-  String formatCurrency(double price) {
+  String formatCurrency(int price) {
     return NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(price);
   }
 
@@ -334,10 +335,10 @@ class _HomeTabState extends State<HomeTab> {
                 ),
                 child: Hero(
                   tag: 'product_img_${product.id}',
-                  child: Image.network(
+                  child: Image.asset(
                     product.imageUrl.isNotEmpty
                         ? product.imageUrl
-                        : "https://cdn-icons-png.flaticon.com/512/883/883407.png",
+                        : "assets/images/placeholder.png",
                     fit: BoxFit.contain,
                   ),
                 ),

@@ -76,7 +76,7 @@ def get_products():
         query = query.filter(Product.name.ilike(f'%{q}%'))
     if category_id is not None:
         query = query.filter(Product.category_id == category_id)
-    products = query.all()
+    products = query.limit(None).all()
     output = [p.to_dict() for p in products]
     return jsonify({'products': output})
 
