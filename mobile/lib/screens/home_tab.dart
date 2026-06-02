@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:medigo/models/cart.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
+import '../models/cart.dart'; // Đã thêm Cart để gọi load Giỏ hàng
 import 'product_detail_screen.dart';
 import 'search_screen.dart';
+import 'cart_screen.dart'; // Thêm trang Giỏ hàng
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,9 +23,9 @@ class _HomeTabState extends State<HomeTab> {
   @override
   void initState() {
     super.initState();
-    _futureProducts = ApiService.fetchProducts(); // Lấy tất cả sản phẩm
+    _futureProducts = ApiService.fetchProducts();
     _loadUserInfo();
-    Cart.init();
+    Cart.init(); // Load giỏ hàng từ DB khi mở app
   }
 
   Future<void> _loadUserInfo() async {
@@ -51,7 +52,7 @@ class _HomeTabState extends State<HomeTab> {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+      backgroundColor: const Color(0xFFF0F2F5),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -100,16 +101,44 @@ class _HomeTabState extends State<HomeTab> {
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.notifications_outlined,
-                          color: Colors.white,
-                        ),
+
+                      // NÚT GIỎ HÀNG & THÔNG BÁO Ở GÓC PHẢI
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CartScreen(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              margin: const EdgeInsets.only(right: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.shopping_cart_outlined,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.notifications_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -172,7 +201,7 @@ class _HomeTabState extends State<HomeTab> {
 
             const SizedBox(height: 24),
 
-            // --- 3. MENU TÍNH NĂNG (MỚI THÊM) ---
+            // --- 3. MENU TÍNH NĂNG (6 Nút) ---
             _buildFeatureMenu(),
 
             const SizedBox(height: 10),
@@ -243,9 +272,8 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  // --- CÁC WIDGET CON ---
+  // --- WIDGET CON ---
 
-  // 1. Giao diện 6 nút Menu Tiện Ích
   Widget _buildFeatureMenu() {
     final features = [
       {
@@ -278,19 +306,16 @@ class _HomeTabState extends State<HomeTab> {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount:
-              3, // Sửa thành 3 cột cho cân đối (3 cột x 2 hàng = 6 nút)
+          crossAxisCount: 3,
           mainAxisSpacing: 16,
           crossAxisSpacing: 12,
-          childAspectRatio: 0.85, // Tỷ lệ kéo giãn nút cho đẹp
+          childAspectRatio: 0.85,
         ),
         itemCount: features.length,
         itemBuilder: (context, index) {
           final item = features[index];
           return InkWell(
-            onTap: () {
-              // TODO: Xử lý sự kiện khi bấm vào nút tính năng
-            },
+            onTap: () {},
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -298,12 +323,12 @@ class _HomeTabState extends State<HomeTab> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: (item['color'] as Color).withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20), // Bo góc mềm mại
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Icon(
                     item['icon'] as IconData,
                     color: item['color'] as Color,
-                    size: 30, // Tăng nhẹ size icon vì đã giảm số cột
+                    size: 30,
                   ),
                 ),
                 const SizedBox(height: 10),

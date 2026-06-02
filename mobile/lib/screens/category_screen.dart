@@ -76,7 +76,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF0F2F5),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
