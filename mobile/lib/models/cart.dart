@@ -65,7 +65,20 @@ class Cart {
   }
 
   static Future<void> addToCart(Product product, int quantity) async {
+    int currentQty = 0;
     final index = items.indexWhere((item) => item.product.id == product.id);
+    
+    if (index >= 0) {
+      currentQty = items[index].quantity;
+    }
+
+    // 🟢 KIỂM TRA GIỚI HẠN BẰNG 10 TRƯỚC KHI CỘNG
+    if (currentQty + quantity > 10) {
+      // Ném ra một ngoại lệ (Exception) để giao diện (UI) biết đường hiện thông báo đỏ
+      throw Exception('Chỉ được mua tối đa 10 sản phẩm cho mỗi loại!');
+    }
+
+    // Nếu hợp lệ thì mới cộng tiếp
     if (index >= 0) {
       items[index].quantity += quantity;
     } else {
@@ -74,8 +87,8 @@ class Cart {
 
     if (_userId != null) {
       try {
-        final headers = await _getAuthHeaders(); // 🟢
-        await http.post(
+        final headers = await _getAuthHeaders();
+        final response = await http.post(
           Uri.parse('${Configs.baseUrl}/cart/add'),
           headers: headers,
           body: jsonEncode({
@@ -84,8 +97,17 @@ class Cart {
             'quantity': quantity,
           }),
         );
+        
+        // Bắt lỗi từ Backend trả về (Nếu có)
+        if (response.statusCode != 200) {
+           final errorData = jsonDecode(response.body);
+           throw Exception(errorData['message'] ?? 'Lỗi server');
+        }
       } catch (e) {
+        // Có thể in ra log lỗi đồng bộ
         print('Lỗi đồng bộ giỏ hàng: $e');
+        // Quăng lỗi ra để màn hình UI bắt được
+        rethrow; 
       }
     }
   }

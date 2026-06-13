@@ -25,7 +25,13 @@ class _AddressListScreenState extends State<AddressListScreen> {
     selectedIndex = AddressService.selectedIndex.clamp(0, _addresses.length - 1);
   }
 
+  // 🟢 ĐÃ SỬA: Hỗ trợ cả 2 chuẩn địa chỉ (Của Backend trả về và của App tạo ra)
   String _formatAddress(Map<String, dynamic> item) {
+    // Nếu có địa chỉ dạng chuỗi dài từ Backend
+    if (item['address'] != null && item['address'].toString().trim().isNotEmpty) {
+      return item['address'].toString().trim();
+    }
+    // Nếu là địa chỉ do người dùng tự nhập tay trên app
     final parts = <String>[
       (item['street'] as String? ?? '').trim(),
       (item['ward'] as String? ?? '').trim(),
@@ -118,7 +124,8 @@ class _AddressListScreenState extends State<AddressListScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            '${item['fullName']} | ${item['phone']}',
+                            // 🟢 ĐÃ SỬA: Bảo vệ rỗng cho tên và SĐT
+                            '${item['fullName'] ?? item['name'] ?? 'Khách hàng'} | ${item['phone'] ?? 'Chưa có SĐT'}',
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -161,7 +168,8 @@ class _AddressListScreenState extends State<AddressListScreen> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            item['label'] as String,
+                            // 🟢 ĐÃ SỬA: Nếu ko có label thì để chữ "Nơi nhận"
+                            item['label'] as String? ?? 'Nơi nhận',
                             style: const TextStyle(
                               color: Colors.teal,
                               fontWeight: FontWeight.w600,
@@ -169,7 +177,8 @@ class _AddressListScreenState extends State<AddressListScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        if ((item['isDefault'] as bool))
+                        // 🟢 ĐÃ SỬA: Bọc ép kiểu an toàn cho bool
+                        if (item['isDefault'] as bool? ?? false)
                           const Text(
                             '[Mặc định]',
                             style: TextStyle(

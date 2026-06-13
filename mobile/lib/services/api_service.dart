@@ -23,13 +23,30 @@ class ApiService {
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-        List<dynamic> productsJson = data['products'];
-        return productsJson.map((item) => Product.fromJson(item)).toList();
+        // 🟢 ĐÃ SỬA: Parse thẳng thành List thay vì Map
+        List<dynamic> productsJson = jsonDecode(response.body);
+        
+        try {
+          return productsJson.map((item) {
+            try {
+              return Product.fromJson(item);
+            } catch (e, stackTrace) {
+              print('API PARSE ERROR: Failed to parse product item: $item');
+              print('Error: $e');
+              print(stackTrace);
+              rethrow;
+            }
+          }).toList();
+        } catch (e, stackTrace) {
+          print('API PARSE ERROR: $e');
+          print(stackTrace);
+          rethrow;
+        }
       } else {
         throw Exception('Lỗi server: ${response.statusCode}');
       }
     } catch (e) {
+      print('API FETCH ERROR: $e');
       throw Exception('Lỗi kết nối: $e');
     }
   }
@@ -39,9 +56,18 @@ class ApiService {
     try {
       final uri = Uri.parse('$baseUrl/categories');
       final response = await http.get(uri);
+      
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-        List<dynamic> list = data['categories'] ?? [];
+        var decodedData = jsonDecode(response.body);
+        List<dynamic> list = [];
+        
+        // 🟢 Tương tự: Đề phòng Backend categories cũng trả thẳng về List
+        if (decodedData is List) {
+          list = decodedData;
+        } else if (decodedData is Map && decodedData.containsKey('categories')) {
+          list = decodedData['categories'];
+        }
+        
         return list.map((item) => Category.fromJson(item)).toList();
       } else {
         throw Exception('Lỗi server: ${response.statusCode}');
@@ -62,14 +88,13 @@ class ApiService {
 
   /// xử lý lỗi khi token hết hạn
   static Future<http.Response> getAuthorized(String url) async {
-    final headers = await _getAuthHeaders(); // Hàm lấy token mà chúng ta đã làm
+    final headers = await _getAuthHeaders(); 
     final response = await http.get(Uri.parse(url), headers: headers);
     
     if (response.statusCode == 401) {
-      // 🟢 TỰ ĐỘNG ĐĂNG XUẤT NẾU TOKEN HẾT HẠN
+      // TỰ ĐỘNG ĐĂNG XUẤT NẾU TOKEN HẾT HẠN
       // _handleUnauthorized(); 
     }
     return response;
   }
 }
-

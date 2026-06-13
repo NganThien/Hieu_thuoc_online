@@ -18,12 +18,11 @@ class AddressService {
     final addressesKey = 'addresses_$_currentUserPhone';
     final addressesString = prefs.getString(addressesKey);
 
-    _addressList.clear(); // Đảm bảo dọn sạch list cũ trước khi nạp
+    _addressList.clear(); 
 
     if (addressesString != null) {
       try {
         final addressesData = jsonDecode(addressesString) as List;
-        // SỬA LỖI 2: Cách giải mã an toàn 100%, không bao giờ bị crash ngầm mất dữ liệu
         _addressList.addAll(
           addressesData.map((e) => Map<String, dynamic>.from(e)).toList(),
         );
@@ -31,8 +30,27 @@ class AddressService {
         print('Lỗi nạp địa chỉ: $e');
       }
     }
-    // SỬA LỖI 1: Đã xóa toàn bộ khối "else" chứa Nguyễn Văn A.
-    // Tài khoản mới từ giờ sẽ có danh sách trống trơn!
+
+    // 🟢 THÊM LOGIC ĐỒNG BỘ BACKEND: 
+    // Nếu danh sách điện thoại trống, thử lấy địa chỉ từ Database của Server trả về lúc Đăng nhập
+    if (_addressList.isEmpty) {
+      final userString = prefs.getString('user_data');
+      if (userString != null) {
+        final userData = jsonDecode(userString);
+        final dbAddress = userData['address'];
+        
+        // Nếu Backend có lưu địa chỉ -> Tạo ngay 1 địa chỉ mặc định trên App
+        if (dbAddress != null && dbAddress.toString().trim().isNotEmpty) {
+          _addressList.add({
+            'name': userData['full_name'] ?? 'Khách hàng',
+            'phone': userData['phone'] ?? _currentUserPhone,
+            'address': dbAddress,
+            'isDefault': true,
+          });
+          await saveAddresses(); // Lưu lại vào máy luôn
+        }
+      }
+    }
   }
 
   static Future<void> saveAddresses() async {
@@ -54,14 +72,13 @@ class AddressService {
       }
     }
 
-    // Tự động gán mặc định nếu đây là địa chỉ đầu tiên khách hàng thêm
     if (_addressList.isEmpty) {
       data['isDefault'] = true;
     }
 
     _addressList.add(data);
     selectedIndex = _addressList.length - 1;
-    saveAddresses(); // Ghi thẳng vào ổ cứng điện thoại
+    saveAddresses(); 
   }
 
   static void updateAddress(int index, Map<String, dynamic> data) {

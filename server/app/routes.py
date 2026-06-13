@@ -3,6 +3,7 @@ from . import db
 from .models import Product, User, Order, OrderDetail, Category, CartItem
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from .models import Product
 
 # --- KHỞI TẠO BLUEPRINT ---
 main = Blueprint('main', __name__)
@@ -69,16 +70,20 @@ def login():
 # --- 3. API LẤY DANH SÁCH THUỐC (Không cần khóa) ---
 @main.route('/api/products', methods=['GET'])
 def get_products():
-    q = request.args.get('q') or request.args.get('search', '').strip()
-    category_id = request.args.get('category_id', type=int)
-    query = Product.query
-    if q:
-        query = query.filter(Product.name.ilike(f'%{q}%'))
-    if category_id is not None:
-        query = query.filter(Product.category_id == category_id)
-    products = query.limit(None).all()
-    output = [p.to_dict() for p in products]
-    return jsonify({'products': output})
+    products = Product.query.all()
+    output = []
+    for product in products:
+        product_data = {
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+            'description': product.description,
+            'image_url': product.image_url,
+            # Bổ sung dòng này để Flutter nhận được dữ liệu "Vỉ", "Gói", "Hộp"...
+            'unit': product.unit 
+        }
+        output.append(product_data)
+    return jsonify(output)
 
 # --- 3b. API LẤY DANH SÁCH DANH MỤC (Không cần khóa) ---
 @main.route('/api/categories', methods=['GET'])
@@ -103,6 +108,14 @@ def create_order():
         return jsonify({'message': 'Dữ liệu không hợp lệ!'}), 400
 
     try:
+        # Lấy địa chỉ khách gửi lên
+        shipping_address = data.get('address', '')
+
+        # 🟢 LƯU NGƯỢC ĐỊA CHỈ VÀO HỒ SƠ TÀI KHOẢN (BẢNG USER)
+        user = User.query.get(current_user_id)
+        if user and shipping_address:
+            user.address = shipping_address # Cập nhật Sổ thành viên
+
         new_order = Order(
             user_id=current_user_id, # Lưu bằng ID bảo mật
             total_amount=data['total_amount'],
@@ -113,6 +126,10 @@ def create_order():
         db.session.flush()
 
         for item in data['items']:
+            # 🟢 CHÈN LUẬT GIỚI HẠN 10 TRƯỚC KHI LƯU ĐƠN
+            if item['quantity'] > 10:
+                raise Exception(f"Sản phẩm ID {item['product_id']} vượt quá giới hạn 10 hộp!")
+                
             detail = OrderDetail(
                 order_id=new_order.id,
                 product_id=item['product_id'],
@@ -240,6 +257,13 @@ def add_to_cart():
         return jsonify({'message': 'Thiếu thông tin!'}), 400
 
     existing_item = CartItem.query.filter_by(user_id=current_user_id, product_id=product_id).first()
+
+    # 🟢 CHÈN LUẬT GIỚI HẠN 10 Ở ĐÂY
+    current_qty = existing_item.quantity if existing_item else 0
+    if current_qty + quantity > 10:
+        return jsonify({'message': 'Chỉ được mua tối đa 10 hộp cho mỗi loại thuốc!'}), 400
+    # --------------------------------
+
     if existing_item:
         existing_item.quantity += quantity
     else:
@@ -259,10 +283,10 @@ def remove_from_cart(product_id):
         db.session.commit()
     return jsonify({'message': 'Đã xóa khỏi DB!'}), 200
 
-@main.route('/api/cart/clear/<int:user_id>', methods=['DELETE'])
+@main.route('/api/cart/clear', methods=['DELETE'])
 @jwt_required()
-def clear_cart(user_id):
+def clear_cart():
     current_user_id = get_jwt_identity()
     CartItem.query.filter_by(user_id=current_user_id).delete()
     db.session.commit()
-    return jsonify({'message': 'Đã làm sạch giỏ!'}), 200
+    return jsonify({'message': 'Đã làm sạch giỏ hàng!'}), 200

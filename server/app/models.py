@@ -25,6 +25,8 @@ class Product(db.Model):
     price = db.Column(db.Numeric(10, 2), nullable=False)
     description = db.Column(db.Text, nullable=True)
     image_url = db.Column(db.Text, nullable=True)
+
+    unit = db.Column(db.String(50), default='Hộp', nullable=False)
     # Liên kết với Category
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
 
